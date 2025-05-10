@@ -1,28 +1,30 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import Home from './pages/Home';
-import Products from './pages/Products';
-import Services from './pages/Services';
-import About from './pages/About';
-import Contact from './pages/Contact';
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
+import { Toaster } from 'react-hot-toast';
+import AppRoutes from './routes/AppRoutes';
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/productos" element={<Products />} />
-            <Route path="/servicios" element={<Services />} />
-            <Route path="/nosotros" element={<About />} />
-            <Route path="/contacto" element={<Contact />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <AuthProvider>
+        <CartProvider>
+          <div className="min-h-screen bg-gray-50 flex flex-col">
+              <Toaster 
+                position="top-right"
+                toastOptions={{
+                  duration: 3000,
+                  style: {
+                    background: '#333',
+                    color: '#fff',
+                  },
+                }}
+              />
+              <AppRoutes />
+          </div>
+        </CartProvider>
+      </AuthProvider>
     </Router>
   );
 }

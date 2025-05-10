@@ -6,9 +6,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#0a2540',
-        secondary: '#1f2937',
-        accent: '#60a5fa',
+        primary: {
+          DEFAULT: '#0066CC',
+          dark: '#004C99',
+          light: '#3399FF',
+        },
+        secondary: {
+          DEFAULT: '#FF6B6B',
+          dark: '#FF4040',
+          light: '#FF9999',
+        },
       },
       fontFamily: {
         serif: ['Playfair Display', 'Merriweather', 'serif'],
