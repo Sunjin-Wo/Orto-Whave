@@ -15,3 +15,10 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+// Limpiar localStorage al iniciar la aplicación para evitar problemas de autenticación
+if (window.location.pathname === '/login' || window.location.pathname === '/register') {
+  console.log('Limpiando localStorage para evitar problemas de autenticación');
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+}

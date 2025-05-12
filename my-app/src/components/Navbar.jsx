@@ -7,25 +7,30 @@ import {
   UserIcon,
   TrashIcon,
   PlusIcon,
-  MinusIcon
+  MinusIcon,
+  ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, withAuthNavigation } from '../context/AuthContext';
 import Checkout from './Checkout';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const navigation = [
-  { name: 'Inicio', href: '#inicio' },
-  { name: 'Servicios', href: '#servicios' },
-  { name: 'Productos', href: '#productos' },
-  { name: 'Nosotros', href: '#nosotros' },
-  { name: 'Contacto', href: '#contacto' },
+  { name: 'Inicio', href: '/' },
+  { name: 'Servicios', href: '/#servicios' },
+  { name: 'Productos', href: '/#productos' },
+  { name: 'Nosotros', href: '/#nosotros' },
+  { name: 'Contacto', href: '/#contacto' },
+  { name: 'Prueba', href: '/test' },
 ];
 
-const Navbar = () => {
+const NavbarBase = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const cartRef = useRef(null);
-  const { isAuthenticated, openAuthModal, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated, logout, user } = useAuth();
   const {
     cartItems,
     isCartOpen,
@@ -69,17 +74,41 @@ const Navbar = () => {
 
   const scrollToSection = (e, href) => {
     e.preventDefault();
-    const element = document.querySelector(href);
-    const offset = 80; // Altura del navbar
-    const bodyRect = document.body.getBoundingClientRect().top;
-    const elementRect = element.getBoundingClientRect().top;
-    const elementPosition = elementRect - bodyRect;
-    const offsetPosition = elementPosition - offset;
+    
+    // Si estamos en una página diferente a la principal, primero navegamos a la página principal
+    if (location.pathname !== '/') {
+      navigate('/');
+      // Esperar un poco para que la página se cargue antes de intentar desplazarse
+      setTimeout(() => {
+        const element = document.querySelector(href.replace('/', ''));
+        if (element) {
+          const offset = 80; // Altura del navbar
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = element.getBoundingClientRect().top;
+          const elementPosition = elementRect - bodyRect;
+          const offsetPosition = elementPosition - offset;
 
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: 'smooth'
-    });
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    } else {
+      const element = document.querySelector(href.replace('/', ''));
+      if (element) {
+        const offset = 80; // Altura del navbar
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = element.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }
 
     setIsOpen(false);
   };
@@ -91,6 +120,60 @@ const Navbar = () => {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setIsOpen(false);
+  };
+
+  const renderAuthButtons = () => {
+    if (isAuthenticated) {
+      return (
+        <div className="flex items-center">
+          <Link
+            to={user?.role === 'ROLE_ADMIN' ? '/dashboard' : '/profile'}
+            className="flex items-center text-gray-700 hover:text-primary transition-colors"
+          >
+            <UserIcon className="h-6 w-6 mr-1" />
+            <span className="hidden md:block">{user?.firstName || 'Mi cuenta'}</span>
+          </Link>
+          <button
+            onClick={() => logout(navigate)}
+            className="ml-4 text-gray-700 hover:text-primary transition-colors"
+          >
+            <ArrowRightOnRectangleIcon className="h-6 w-6" />
+          </button>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex items-center space-x-3">
+          <Link
+            to="/login"
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+              scrolled 
+                ? 'border border-primary text-primary hover:bg-primary hover:text-white' 
+                : 'bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30'
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Iniciar sesión
+          </Link>
+          <Link
+            to="/register"
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+              scrolled 
+                ? 'bg-primary text-white hover:bg-primary-dark shadow-md hover:shadow-lg' 
+                : 'bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30'
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Crear cuenta
+          </Link>
+        </div>
+      );
+    }
   };
 
   return (
@@ -106,45 +189,49 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
-            <a href="#inicio" className="flex-shrink-0 flex items-center">
+            <Link to="/" className="flex-shrink-0 flex items-center">
               <img
                 className="h-12 w-auto"
                 src="/images/ortowhite-logo.png"
                 alt="OrtoWhite"
               />
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:space-x-1">
             {navigation.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                onClick={(e) => scrollToSection(e, item.href)}
-                className={`relative px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 mx-1 group overflow-hidden ${
-                  scrolled ? 'text-gray-800 hover:text-primary' : 'text-white hover:text-white'
-                }`}
-              >
-                <span className="relative z-10">{item.name}</span>
-                <span className={`absolute bottom-0 left-0 w-full h-0.5 ${scrolled ? 'bg-primary' : 'bg-white'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
-              </a>
+              item.href.includes('#') ? (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  onClick={(e) => scrollToSection(e, item.href)}
+                  className={`relative px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 mx-1 group overflow-hidden ${
+                    scrolled ? 'text-gray-800 hover:text-primary' : 'text-white hover:text-white'
+                  }`}
+                >
+                  <span className="relative z-10">{item.name}</span>
+                  <span className={`absolute bottom-0 left-0 w-full h-0.5 ${scrolled ? 'bg-primary' : 'bg-white'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
+                </a>
+              ) : (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`relative px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 mx-1 group overflow-hidden ${
+                    scrolled ? 'text-gray-800 hover:text-primary' : 'text-white hover:text-white'
+                  }`}
+                >
+                  <span className="relative z-10">{item.name}</span>
+                  <span className={`absolute bottom-0 left-0 w-full h-0.5 ${scrolled ? 'bg-primary' : 'bg-white'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
+                </Link>
+              )
             ))}
           </div>
 
           {/* User and Cart Icons */}
           <div className="hidden md:flex md:items-center">
             <div className="flex items-center space-x-4 mr-6">
-              <button 
-                id="login-button"
-                className={`p-1 rounded-full ${
-                  scrolled ? 'text-gray-800 hover:text-primary' : 'text-white hover:text-white/80'
-                }`}
-                aria-label="Usuario"
-                onClick={openAuthModal}
-              >
-                <UserIcon className="h-6 w-6" />
-              </button>
+              {renderAuthButtons()}
               
               <div className="relative">
                 <button 
@@ -299,34 +386,73 @@ const Navbar = () => {
           >
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white/95 backdrop-blur-sm shadow-lg">
               {navigation.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  onClick={(e) => scrollToSection(e, item.href)}
-                  className="text-gray-800 hover:text-primary hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
-                >
-                  {item.name}
-                </a>
+                item.href.includes('#') ? (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    onClick={(e) => scrollToSection(e, item.href)}
+                    className="text-gray-800 hover:text-primary hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                  >
+                    {item.name}
+                  </a>
+                ) : (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className="text-gray-800 hover:text-primary hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                )
               ))}
               
-              <div className="border-t border-gray-200 my-2 pt-2">
-                <button
-                  id="login-button-mobile"
-                  className="w-full flex items-center text-gray-800 hover:text-primary hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 text-left"
-                  onClick={() => {
-                    openAuthModal();
-                    setIsOpen(false);
-                  }}
-                >
-                  <UserIcon className="h-5 w-5 mr-2" />
-                  Iniciar sesión
-                </button>
+              <div className="py-4 px-2 border-t border-gray-200">
+                {isAuthenticated ? (
+                  <div className="flex flex-col space-y-2">
+                    <Link
+                      to={user?.role === 'ROLE_ADMIN' ? '/dashboard' : '/profile'}
+                      className="flex items-center text-gray-700 hover:text-primary px-3 py-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <UserIcon className="h-5 w-5 mr-2" />
+                      Mi cuenta
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout(navigate);
+                        setIsOpen(false);
+                      }}
+                      className="flex items-center text-gray-700 hover:text-primary px-3 py-2"
+                    >
+                      <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
+                      Cerrar sesión
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col space-y-2">
+                    <Link
+                      to="/login"
+                      className="bg-white text-primary border border-primary hover:bg-primary hover:text-white block w-full text-center px-3 py-2 rounded-full text-sm font-medium transition-colors duration-200"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Iniciar sesión
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="bg-primary text-white hover:bg-primary-dark block w-full text-center px-3 py-2 rounded-full text-sm font-medium transition-colors duration-200"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Crear cuenta
+                    </Link>
+                  </div>
+                )}
               </div>
               
               <a
                 href="#contacto"
                 onClick={(e) => scrollToSection(e, '#contacto')}
-                className="bg-primary text-white hover:bg-primary-dark block w-full text-center mt-2 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                className="bg-primary text-white hover:bg-primary-dark block w-full text-center mt-2 px-3 py-2 rounded-full text-sm font-medium transition-colors duration-200"
               >
                 Agenda tu Cita
               </a>
@@ -344,4 +470,6 @@ const Navbar = () => {
   );
 };
 
+// Exportamos el componente con el HOC aplicado
+const Navbar = withAuthNavigation(NavbarBase);
 export default Navbar; 

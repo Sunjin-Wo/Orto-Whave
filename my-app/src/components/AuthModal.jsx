@@ -1,59 +1,21 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { XCircleIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const AuthModal = ({ isOpen, onClose }) => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({
-    userOrEmail: '',
-    password: '',
-    name: '',
-    confirmPassword: ''
-  });
-  const [error, setError] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const toggleAuthMode = () => {
-    setIsLogin(!isLogin);
-    setError('');
+  const handleLoginClick = () => {
+    onClose();
+    navigate('/login');
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError('');
-
-    if (isLogin) {
-      // Verificar las credenciales predefinidas
-      const isValidUser = formData.userOrEmail === 'root';
-      const isValidPassword = formData.password === '12345678';
-
-      if (isValidUser && isValidPassword) {
-        // Cerrar el modal
-        onClose();
-        // Redireccionar al dashboard
-        window.location.href = '/dashboard';
-      } else {
-        setError('Usuario o contraseña incorrectos');
-      }
-    } else {
-      // Lógica para registro (podría implementarse después)
-      if (formData.password !== formData.confirmPassword) {
-        setError('Las contraseñas no coinciden');
-        return;
-      }
-      
-      // Simulación de registro exitoso
-      onClose();
-      // Redireccionar al dashboard
-      window.location.href = '/dashboard';
-    }
+  const handleRegisterClick = () => {
+    onClose();
+    navigate('/register');
   };
 
   return (
@@ -87,120 +49,24 @@ const AuthModal = ({ isOpen, onClose }) => {
               
               <div className="p-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                  {isLogin ? 'Iniciar sesión' : 'Crear cuenta'}
+                  Accede a tu cuenta
                 </h2>
                 
-                {error && (
-                  <div className="mb-4 p-3 rounded bg-red-50 border border-red-200 text-red-600 text-sm">
-                    {error}
-                  </div>
-                )}
-                
-                <form className="space-y-4" onSubmit={handleSubmit}>
-                  {!isLogin && (
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                        Nombre completo
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                        required
-                      />
-                    </div>
-                  )}
+                <div className="space-y-4">
+                  <button
+                    onClick={handleLoginClick}
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+                  >
+                    Iniciar sesión
+                  </button>
                   
-                  <div>
-                    <label htmlFor="userOrEmail" className="block text-sm font-medium text-gray-700">
-                      Correo electrónico o usuario
-                    </label>
-                    <input
-                      type="text"
-                      id="userOrEmail"
-                      name="userOrEmail"
-                      value={formData.userOrEmail}
-                      onChange={handleChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                      required
-                    />
-                    {isLogin && (
-                      <p className="text-xs text-gray-500 mt-1">Usuario de prueba: root</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                      Contraseña
-                    </label>
-                    <input
-                      type="password"
-                      id="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                      required
-                    />
-                    {isLogin && (
-                      <p className="text-xs text-gray-500 mt-1">Contraseña de prueba: 12345678</p>
-                    )}
-                  </div>
-                  
-                  {!isLogin && (
-                    <div>
-                      <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                        Confirmar contraseña
-                      </label>
-                      <input
-                        type="password"
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                        required
-                      />
-                    </div>
-                  )}
-                  
-                  {isLogin && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <input
-                          id="remember_me"
-                          name="remember_me"
-                          type="checkbox"
-                          className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                        />
-                        <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-700">
-                          Recordarme
-                        </label>
-                      </div>
-                      
-                      <div className="text-sm">
-                        <button 
-                          type="button"
-                          className="font-medium text-primary hover:text-primary-dark"
-                        >
-                          ¿Olvidaste tu contraseña?
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div>
-                    <button
-                      type="submit"
-                      className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
-                    >
-                      {isLogin ? 'Iniciar sesión' : 'Registrarse'}
-                    </button>
-                  </div>
-                </form>
+                  <button
+                    onClick={handleRegisterClick}
+                    className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+                  >
+                    Crear cuenta nueva
+                  </button>
+                </div>
                 
                 <div className="mt-6">
                   <div className="relative">
@@ -237,18 +103,6 @@ const AuthModal = ({ isOpen, onClose }) => {
                       Facebook
                     </button>
                   </div>
-                </div>
-                
-                <div className="mt-6 text-center">
-                  <button
-                    type="button"
-                    className="text-sm font-medium text-primary hover:text-primary-dark"
-                    onClick={toggleAuthMode}
-                  >
-                    {isLogin 
-                      ? '¿No tienes una cuenta? Regístrate' 
-                      : '¿Ya tienes una cuenta? Inicia sesión'}
-                  </button>
                 </div>
               </div>
             </div>

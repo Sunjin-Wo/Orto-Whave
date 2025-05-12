@@ -2,6 +2,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "framer-motion": "^12.10.5",
+    "mysql2": "^3.14.1",
     "react-hot-toast": "^2.5.2"
   }
 }
