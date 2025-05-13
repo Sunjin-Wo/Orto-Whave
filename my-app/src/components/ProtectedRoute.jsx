@@ -16,36 +16,26 @@ const ProtectedRouteBase = ({ element, requiredRole }) => {
     console.log("No autenticado, redirigiendo a login");
     return <Navigate to="/login" />;
   }
+
+  // Si el usuario es administrador, permitir acceso a todas las rutas
+  if (user?.role === 'ROLE_ADMIN') {
+    console.log("Usuario es admin, permitiendo acceso a todas las rutas");
+    return element;
+  }
   
   // Si se especifica un rol requerido y el usuario no lo tiene, redirigir
   if (requiredRole && user?.role !== requiredRole) {
     console.log(`Rol requerido ${requiredRole} no coincide con ${user?.role}, redirigiendo`);
     
-    // Caso especial para administrador
-    if (user?.role === 'ROLE_ADMIN') {
-      console.log("Usuario es admin, permitiendo acceso");
-      return element;
-    }
-    
-    // Caso especial para paciente
-    if (requiredRole === 'ROLE_USER' && user?.email === 'paciente@ejemplo.com') {
-      console.log("Usuario es paciente de ejemplo, permitiendo acceso");
-      return element;
-    }
-    
-    // Caso especial para doctor
-    if (requiredRole === 'ROLE_DOCTOR' && user?.email === 'doctor@ortowhite.com') {
-      console.log("Usuario es doctor, permitiendo acceso");
-      return element;
-    }
-    
-    // Redirigir según el rol
-    if (user?.role === 'ROLE_ADMIN') {
-      return <Navigate to="/dashboard" />;
-    } else if (user?.role === 'ROLE_DOCTOR') {
-      return <Navigate to="/doctor-dashboard" />;
-    } else {
-      return <Navigate to="/profile" />;
+    // Redireccionar según el rol actual del usuario
+    switch (user?.role) {
+      case 'ROLE_DOCTOR':
+        return <Navigate to="/doctor-dashboard" />;
+      case 'ROLE_STAFF':
+        return <Navigate to="/dashboard" />;
+      case 'ROLE_USER':
+      default:
+        return <Navigate to="/profile" />;
     }
   }
   
@@ -65,12 +55,17 @@ const PublicRouteBase = ({ element }) => {
   if (isAuthenticated) {
     console.log("Usuario autenticado, redirigiendo según rol");
     
-    if (user?.role === 'ROLE_ADMIN') {
-      return <Navigate to="/dashboard" />;
-    } else if (user?.role === 'ROLE_DOCTOR') {
-      return <Navigate to="/doctor-dashboard" />;
-    } else {
-      return <Navigate to="/profile" />;
+    // Redireccionar según el rol del usuario
+    switch (user?.role) {
+      case 'ROLE_ADMIN':
+        return <Navigate to="/dashboard" />;
+      case 'ROLE_DOCTOR':
+        return <Navigate to="/doctor-dashboard" />;
+      case 'ROLE_STAFF':
+        return <Navigate to="/dashboard" />;
+      case 'ROLE_USER':
+      default:
+        return <Navigate to="/profile" />;
     }
   }
   

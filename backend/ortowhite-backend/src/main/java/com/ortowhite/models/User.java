@@ -1,8 +1,7 @@
 package com.ortowhite.models;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Date;
 
 @Entity
 @Table(name = "users")
@@ -18,23 +17,40 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String role;
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
     private String firstName;
     private String lastName;
     private String phone;
+    private Boolean active;
+    
+    @Column(name = "profile_image")
+    private String profileImage;
+    
+    @Column(name = "last_login")
+    private Date lastLogin;
+    
+    @Column(name = "created_at")
+    private Date createdAt;
+    
+    @Column(name = "updated_at")
+    private Date updatedAt;
 
     public User() {
     }
 
-    public User(String email, String password, String role, String firstName, String lastName, String phone) {
+    public User(String email, String password, Role role, String firstName, String lastName, String phone) {
         this.email = email;
         this.password = password;
         this.role = role;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
+        this.active = true;
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
     }
 
     // Getters and Setters
@@ -62,11 +78,15 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
+    
+    public String getRoleName() {
+        return role != null ? role.getName() : null;
+    }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
@@ -92,5 +112,45 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+    
+    public Boolean getActive() {
+        return active;
+    }
+    
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+    
+    public String getProfileImage() {
+        return profileImage;
+    }
+    
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+    
+    public Date getLastLogin() {
+        return lastLogin;
+    }
+    
+    public void setLastLogin(Date lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+    
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+    
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+    
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+    
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 } 

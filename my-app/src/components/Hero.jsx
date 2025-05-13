@@ -6,7 +6,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 const slides = [
   {
     image: images.medicoClinica,
-    title: "Excelencia en Ortopedia",
+    title: "Excelencia en OWC Orthowave Colombia",
     description: "Tecnología de vanguardia y atención personalizada para tu bienestar"
   },
   {

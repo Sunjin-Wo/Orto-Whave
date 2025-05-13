@@ -16,8 +16,8 @@ const HomePage = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <Hero 
-        title="Bienvenido a OrtoWhite"
-        subtitle="Tu clínica dental de confianza"
+        title="Bienvenido a OWC Orthowave Colombia"
+        subtitle="Tu centro ortopédico especializado"
         cta={
           isAuthenticated ? (
             <Link 
@@ -46,8 +46,8 @@ const HomePage = () => {
         image="/images/hero-image.jpg"
       />
       <Services />
-      <AboutUs />
       <Products />
+      <AboutUs />
       <Contact />
       <Footer />
     </div>

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { EnvelopeIcon } from '@heroicons/react/24/outline';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,38 @@ const Contact = () => {
   
   const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState(false);
+
+  // Añadir hook para manejar el scroll cuando se carga la página con hash #contacto
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash === '#contacto') {
+        setTimeout(() => {
+          const element = document.getElementById('contacto');
+          if (element) {
+            const headerOffset = 80; // Altura aproximada del navbar
+            const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+            const offsetPosition = elementPosition - headerOffset;
+            
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }, 100);
+      }
+    };
+
+    // Ejecutar una vez al cargar si ya hay un hash
+    handleHashChange();
+
+    // Añadir event listener para cambios en el hash
+    window.addEventListener('hashchange', handleHashChange);
+    
+    // Limpiar event listener
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,7 +99,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div id="contacto" className="container mx-auto px-4 py-12">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -188,14 +221,14 @@ const Contact = () => {
         >
           <div className="h-full">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2970.123023212726!2d12.490042376891462!3d41.89021017922119!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x132f61b6532013ad%3A0x28f1c82e908503c4!2sColiseo%20de%20Roma!5e0!3m2!1ses!2sco!4v1699456780531!5m2!1ses!2sco"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.4892783039814!2d-74.03347962498959!3d4.7047199957569935!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9a9e6b33e5ed%3A0x4883a2cd10d7ead1!2sCl.%20134%20%237b-83%2C%20Bogot%C3%A1!5e0!3m2!1ses!2sco!4v1706036287729!5m2!1ses!2sco"
               width="100%"
               height="100%"
               style={{ border: 0, minHeight: "100%", height: "100%" }}
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Ubicación Coliseo Romano"
+              title="Ubicación Orto-White"
               className="w-full h-full min-h-[400px]"
             ></iframe>
           </div>
@@ -233,7 +266,7 @@ const Contact = () => {
             </svg>
           </div>
           <h3 className="text-xl font-semibold mb-2">Escríbenos</h3>
-          <p className="text-gray-600">contacto@ortowhite.com</p>
+          <p className="text-gray-600">contacto@orthowave.co</p>
         </motion.div>
 
         <motion.div 
@@ -242,11 +275,12 @@ const Contact = () => {
         >
           <div className="inline-block p-4 bg-primary/10 rounded-full mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold mb-2">Horario de atención</h3>
-          <p className="text-gray-600">Lunes - Viernes: 8:00 AM - 6:00 PM</p>
+          <h3 className="text-xl font-semibold mb-2">Visítanos</h3>
+          <p className="text-gray-600">Calle 134# 7b-83 Consultorio 122</p>
         </motion.div>
       </motion.div>
     </div>

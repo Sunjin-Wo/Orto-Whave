@@ -32,7 +32,7 @@ const AboutUs = () => {
   ];
 
   return (
-    <div className="bg-white py-16 md:py-24">
+    <div id="nosotros" className="bg-white py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
           className="mb-16 text-center"
@@ -68,7 +68,7 @@ const AboutUs = () => {
             className="flex flex-col justify-center"
           >
             <h3 className="text-2xl font-bold text-gray-800 mb-4">
-              En Ortopedia Integral
+              En OWC Orthowave Colombia
             </h3>
             <p className="text-gray-600 mb-4 leading-relaxed">
               Nos especializamos en el cuidado y tratamiento de los huesos, músculos y articulaciones, ofreciendo soluciones médicas y quirúrgicas a personas de todas las edades. Nuestro enfoque está centrado en el paciente: combinamos la experiencia clínica con tecnología avanzada para ayudarte a recuperar tu movilidad y bienestar.

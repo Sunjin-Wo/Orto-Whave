@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { CalendarIcon, UserIcon, ClockIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
+import { 
+  CalendarIcon, 
+  UserIcon, 
+  ClockIcon, 
+  CheckCircleIcon,
+  ArrowRightOnRectangleIcon 
+} from '@heroicons/react/24/outline';
 
 const UserProfile = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -92,161 +100,190 @@ const UserProfile = () => {
     return new Date(dateString).toLocaleDateString('es-ES', options);
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Mi Perfil</h1>
-      
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="flex border-b">
-          <button
-            className={`px-6 py-3 font-medium ${activeTab === 'profile' ? 'text-primary border-b-2 border-primary' : 'text-gray-600'}`}
-            onClick={() => setActiveTab('profile')}
-          >
-            Información Personal
-          </button>
-          <button
-            className={`px-6 py-3 font-medium ${activeTab === 'appointments' ? 'text-primary border-b-2 border-primary' : 'text-gray-600'}`}
-            onClick={() => setActiveTab('appointments')}
-          >
-            Mis Citas
-          </button>
-        </div>
-        
-        <div className="p-6">
-          {activeTab === 'profile' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
+    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          {/* Header con información del usuario y botón de cerrar sesión */}
+          <div className="bg-primary/10 px-6 py-4 flex justify-between items-center">
+            <div className="flex items-center">
+              <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xl font-bold">
+                {user?.firstName?.charAt(0) || 'U'}{user?.lastName?.charAt(0) || ''}
+              </div>
+              <div className="ml-4">
+                <h2 className="text-xl font-semibold text-gray-800">{user?.firstName || 'Usuario'} {user?.lastName || ''}</h2>
+                <p className="text-gray-600">{user?.email || 'usuario@ejemplo.com'}</p>
+              </div>
+            </div>
+            <button
+              onClick={() => logout(navigate)}
+              className="flex items-center text-gray-700 hover:text-red-600"
+              title="Cerrar sesión"
             >
-              {userInfo ? (
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
-                      <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <UserIcon className="h-5 w-5 text-gray-400 mr-2" />
-                        <span>{userInfo.firstName} {userInfo.lastName}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Documento</label>
-                      <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <span className="text-gray-400 mr-2">#</span>
-                        <span>{userInfo.documentType}: {userInfo.documentId}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
-                      <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <span className="text-gray-400 mr-2">@</span>
-                        <span>{userInfo.email}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                      <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <span className="text-gray-400 mr-2">📱</span>
-                        <span>{userInfo.phone}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
-                      <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <span className="text-gray-400 mr-2">🏠</span>
-                        <span>{userInfo.address || 'No registrada'}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
-                      <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <CalendarIcon className="h-5 w-5 text-gray-400 mr-2" />
-                        <span>{userInfo.birthDate ? new Date(userInfo.birthDate).toLocaleDateString('es-ES') : 'No registrada'}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-gray-500">No se encontró información del perfil.</p>
-                  <button className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
-                    Completar mi perfil
-                  </button>
-                </div>
-              )}
-            </motion.div>
-          )}
-          
-          {activeTab === 'appointments' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {appointments.length > 0 ? (
-                <div>
-                  <h3 className="text-lg font-medium text-gray-800 mb-4">Próximas citas</h3>
-                  <div className="space-y-4">
-                    {appointments.map((appointment) => (
-                      <div key={appointment.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-medium text-gray-800">{appointment.serviceType}</h4>
-                            <div className="flex items-center mt-2 text-sm text-gray-600">
-                              <CalendarIcon className="h-4 w-4 mr-1" />
-                              <span>{formatDate(appointment.appointmentDateTime)}</span>
-                            </div>
-                            {appointment.doctorName && (
-                              <div className="flex items-center mt-2 text-sm text-gray-600">
-                                <UserIcon className="h-4 w-4 mr-1" />
-                                <span>{appointment.doctorName}</span>
-                              </div>
-                            )}
-                          </div>
-                          <div className={`px-3 py-1 rounded-full text-sm ${
-                            appointment.status === 'Confirmada' ? 'bg-green-100 text-green-800' :
-                            appointment.status === 'Pendiente' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {appointment.status}
-                          </div>
+              <ArrowRightOnRectangleIcon className="h-5 w-5 mr-1" />
+              <span>Cerrar sesión</span>
+            </button>
+          </div>
+
+          {/* Tabs de navegación */}
+          <div className="border-b border-gray-200">
+            <nav className="flex -mb-px">
+              <button
+                onClick={() => setActiveTab('profile')}
+                className={`py-4 px-6 text-center border-b-2 font-medium text-sm flex items-center justify-center ${
+                  activeTab === 'profile'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <UserIcon className="h-5 w-5 mr-2" />
+                Perfil
+              </button>
+              <button
+                onClick={() => setActiveTab('appointments')}
+                className={`py-4 px-6 text-center border-b-2 font-medium text-sm flex items-center justify-center ${
+                  activeTab === 'appointments'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <CalendarIcon className="h-5 w-5 mr-2" />
+                Mis Citas
+              </button>
+            </nav>
+          </div>
+
+          {/* Contenido de las pestañas */}
+          <div className="p-6">
+            {loading ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+              </div>
+            ) : activeTab === 'profile' ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {userInfo ? (
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <UserIcon className="h-5 w-5 text-gray-400 mr-2" />
+                          <span>{userInfo.firstName} {userInfo.lastName}</span>
                         </div>
-                        {appointment.notes && (
-                          <div className="mt-3 text-sm text-gray-600">
-                            <p className="font-medium">Notas:</p>
-                            <p>{appointment.notes}</p>
-                          </div>
-                        )}
                       </div>
-                    ))}
+                      
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Documento</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <span className="text-gray-400 mr-2">#</span>
+                          <span>{userInfo.documentType}: {userInfo.documentId}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <span className="text-gray-400 mr-2">@</span>
+                          <span>{userInfo.email}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <span className="text-gray-400 mr-2">📱</span>
+                          <span>{userInfo.phone}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <span className="text-gray-400 mr-2">🏠</span>
+                          <span>{userInfo.address || 'No registrada'}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <CalendarIcon className="h-5 w-5 text-gray-400 mr-2" />
+                          <span>{userInfo.birthDate ? new Date(userInfo.birthDate).toLocaleDateString('es-ES') : 'No registrada'}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <ClockIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No tienes citas programadas.</p>
-                  <a href="#contacto" className="mt-4 inline-block px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
-                    Agendar una cita
-                  </a>
-                </div>
-              )}
-            </motion.div>
-          )}
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">No se encontró información del perfil.</p>
+                    <button className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                      Completar mi perfil
+                    </button>
+                  </div>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {appointments.length > 0 ? (
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-800 mb-4">Próximas citas</h3>
+                    <div className="space-y-4">
+                      {appointments.map((appointment) => (
+                        <div key={appointment.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-medium text-gray-800">{appointment.serviceType}</h4>
+                              <div className="flex items-center mt-2 text-sm text-gray-600">
+                                <CalendarIcon className="h-4 w-4 mr-1" />
+                                <span>{formatDate(appointment.appointmentDateTime)}</span>
+                              </div>
+                              {appointment.doctorName && (
+                                <div className="flex items-center mt-2 text-sm text-gray-600">
+                                  <UserIcon className="h-4 w-4 mr-1" />
+                                  <span>{appointment.doctorName}</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className={`px-3 py-1 rounded-full text-sm ${
+                              appointment.status === 'Confirmada' ? 'bg-green-100 text-green-800' :
+                              appointment.status === 'Pendiente' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {appointment.status}
+                            </div>
+                          </div>
+                          {appointment.notes && (
+                            <div className="mt-3 text-sm text-gray-600">
+                              <p className="font-medium">Notas:</p>
+                              <p>{appointment.notes}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <ClockIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500">No tienes citas programadas.</p>
+                    <a href="#contacto" className="mt-4 inline-block px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                      Agendar una cita
+                    </a>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </div>
         </div>
       </div>
     </div>

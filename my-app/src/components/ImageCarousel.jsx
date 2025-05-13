@@ -6,7 +6,7 @@ import { ChevronLeftIcon, ChevronRightIcon, PauseIcon, PlayIcon } from '@heroico
 const slides = [
   {
     image: images.medicoClinica,
-    title: "Excelencia en Ortopedia",
+    title: "Excelencia en OWC Orthowave Colombia",
     description: "Tecnología de vanguardia y atención personalizada para tu bienestar"
   },
   {
@@ -96,7 +96,7 @@ const ImageCarousel = () => {
       <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-20">
         <img
           src="/images/ortowhite-logo.png"
-          alt="OrtoWhite"
+          alt="OWC Orthowave Colombia"
           className="h-16 md:h-20"
         />
       </div>

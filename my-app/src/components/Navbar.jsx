@@ -21,7 +21,6 @@ const navigation = [
   { name: 'Productos', href: '/#productos' },
   { name: 'Nosotros', href: '/#nosotros' },
   { name: 'Contacto', href: '/#contacto' },
-  { name: 'Prueba', href: '/test' },
 ];
 
 const NavbarBase = () => {
@@ -80,12 +79,11 @@ const NavbarBase = () => {
       navigate('/');
       // Esperar un poco para que la página se cargue antes de intentar desplazarse
       setTimeout(() => {
-        const element = document.querySelector(href.replace('/', ''));
+        const sectionId = href.replace('/#', '');
+        const element = document.getElementById(sectionId);
         if (element) {
           const offset = 80; // Altura del navbar
-          const bodyRect = document.body.getBoundingClientRect().top;
-          const elementRect = element.getBoundingClientRect().top;
-          const elementPosition = elementRect - bodyRect;
+          const elementPosition = element.getBoundingClientRect().top + window.scrollY;
           const offsetPosition = elementPosition - offset;
 
           window.scrollTo({
@@ -93,20 +91,30 @@ const NavbarBase = () => {
             behavior: 'smooth'
           });
         }
-      }, 100);
+      }, 500); // Aumentamos el tiempo de espera para asegurar que la página se cargue completamente
     } else {
-      const element = document.querySelector(href.replace('/', ''));
+      const sectionId = href.replace('/#', '');
+      const element = document.getElementById(sectionId);
       if (element) {
         const offset = 80; // Altura del navbar
-        const bodyRect = document.body.getBoundingClientRect().top;
-        const elementRect = element.getBoundingClientRect().top;
-        const elementPosition = elementRect - bodyRect;
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
         const offsetPosition = elementPosition - offset;
 
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
+        // Si es la sección de contacto, asegurarse de que se vea desde el principio
+        if (sectionId === 'contacto') {
+          // Usar un pequeño retraso para asegurar que la animación funcione correctamente
+          setTimeout(() => {
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }, 50);
+        } else {
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
       }
     }
 
@@ -132,7 +140,7 @@ const NavbarBase = () => {
       return (
         <div className="flex items-center">
           <Link
-            to={user?.role === 'ROLE_ADMIN' ? '/dashboard' : '/profile'}
+            to={user?.role === 'ROLE_ADMIN' ? '/dashboard' : (user?.role === 'ROLE_DOCTOR' ? '/doctor-dashboard' : '/profile')}
             className="flex items-center text-gray-700 hover:text-primary transition-colors"
           >
             <UserIcon className="h-6 w-6 mr-1" />
@@ -140,9 +148,11 @@ const NavbarBase = () => {
           </Link>
           <button
             onClick={() => logout(navigate)}
-            className="ml-4 text-gray-700 hover:text-primary transition-colors"
+            className="ml-4 flex items-center text-gray-700 hover:text-primary transition-colors"
+            title="Cerrar sesión"
           >
             <ArrowRightOnRectangleIcon className="h-6 w-6" />
+            <span className="hidden md:block ml-1">Salir</span>
           </button>
         </div>
       );
@@ -151,22 +161,14 @@ const NavbarBase = () => {
         <div className="flex items-center space-x-3">
           <Link
             to="/login"
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-              scrolled 
-                ? 'border border-primary text-primary hover:bg-primary hover:text-white' 
-                : 'bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30'
-            }`}
+            className="px-5 py-1.5 text-sm uppercase tracking-wider font-medium transition-all duration-300 text-primary border-b-2 border-primary hover:bg-primary/10"
             onClick={() => setIsOpen(false)}
           >
             Iniciar sesión
           </Link>
           <Link
             to="/register"
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-              scrolled 
-                ? 'bg-primary text-white hover:bg-primary-dark shadow-md hover:shadow-lg' 
-                : 'bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30'
-            }`}
+            className="px-5 py-1.5 text-sm uppercase tracking-wider font-medium transition-all duration-300 text-white bg-primary hover:bg-primary-dark"
             onClick={() => setIsOpen(false)}
           >
             Crear cuenta
@@ -179,71 +181,51 @@ const NavbarBase = () => {
   return (
     <>
     <motion.nav 
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white/95 backdrop-blur-sm shadow-lg' : 'bg-transparent'
-      }`}
+      className={`fixed w-full z-50 transition-all duration-300 bg-white shadow-sm`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0 flex items-center">
-              <img
-                className="h-12 w-auto"
-                src="/images/ortowhite-logo.png"
-                alt="OrtoWhite"
-              />
-            </Link>
-          </div>
-
+        <div className="flex justify-between items-center h-16">
           {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-1">
+          <div className="hidden md:flex md:items-center">
             {navigation.map((item) => (
               item.href.includes('#') ? (
                 <a
                   key={item.name}
                   href={item.href}
                   onClick={(e) => scrollToSection(e, item.href)}
-                  className={`relative px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 mx-1 group overflow-hidden ${
-                    scrolled ? 'text-gray-800 hover:text-primary' : 'text-white hover:text-white'
-                  }`}
+                  className="uppercase tracking-wider px-4 py-2 text-xs font-medium transition-colors mx-1 text-gray-700 hover:text-primary"
                 >
-                  <span className="relative z-10">{item.name}</span>
-                  <span className={`absolute bottom-0 left-0 w-full h-0.5 ${scrolled ? 'bg-primary' : 'bg-white'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
+                  {item.name}
                 </a>
               ) : (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`relative px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 mx-1 group overflow-hidden ${
-                    scrolled ? 'text-gray-800 hover:text-primary' : 'text-white hover:text-white'
-                  }`}
+                  className="uppercase tracking-wider px-4 py-2 text-xs font-medium transition-colors mx-1 text-gray-700 hover:text-primary"
                 >
-                  <span className="relative z-10">{item.name}</span>
-                  <span className={`absolute bottom-0 left-0 w-full h-0.5 ${scrolled ? 'bg-primary' : 'bg-white'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
+                  {item.name}
                 </Link>
               )
             ))}
           </div>
 
           {/* User and Cart Icons */}
-          <div className="hidden md:flex md:items-center">
+          <div className="flex items-center ml-auto">
             <div className="flex items-center space-x-4 mr-6">
               {renderAuthButtons()}
               
               <div className="relative">
                 <button 
-                  className={`p-2 rounded-full ${
-                    scrolled ? 'text-gray-800' : 'text-white'
-                  } hover:bg-white/10 transition-colors relative`}
+                  className="p-2 rounded-none text-gray-700 hover:text-primary transition-colors relative"
                   aria-label="Carrito de compras"
                   onClick={() => setIsCartOpen(!isCartOpen)}
                 >
                   <ShoppingCartIcon className="h-6 w-6" />
                   {getCartCount() > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-secondary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                       {getCartCount()}
                     </span>
                   )}
@@ -254,7 +236,7 @@ const NavbarBase = () => {
                   {isCartOpen && (
                     <motion.div
                       ref={cartRef}
-                      className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl"
+                      className="absolute right-0 mt-2 w-96 bg-white rounded-none shadow-xl"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
@@ -280,7 +262,7 @@ const NavbarBase = () => {
                           <div className="p-4 space-y-4">
                             {cartItems.map((item) => (
                               <div key={item.id} className="flex items-center space-x-4">
-                                <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
+                                <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-none overflow-hidden">
                                   <img
                                     src={item.image}
                                     alt={item.name}
@@ -322,13 +304,13 @@ const NavbarBase = () => {
                         <div className="p-4 border-t border-gray-200">
                           <div className="flex justify-between items-center mb-4">
                             <span className="text-base font-medium text-gray-900">Total</span>
-                            <span className="text-lg font-bold text-primary">
+                            <span className="text-lg font-bold text-secondary">
                               {formatPrice(getCartTotal())}
                             </span>
                           </div>
                           <button
                               onClick={proceedToCheckout}
-                            className="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-dark transition-colors"
+                            className="w-full bg-primary text-white py-2 uppercase tracking-wider text-sm font-medium hover:bg-primary-dark transition-colors"
                           >
                             Proceder al pago
                           </button>
@@ -344,11 +326,7 @@ const NavbarBase = () => {
             <a
               href="#contacto"
               onClick={(e) => scrollToSection(e, '#contacto')}
-              className={`ml-4 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                scrolled 
-                  ? 'bg-primary text-white hover:bg-primary-dark shadow-md hover:shadow-lg' 
-                  : 'bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30'
-              }`}
+              className="uppercase tracking-wider px-5 py-1.5 text-sm font-medium transition-all duration-300 text-white bg-primary hover:bg-primary-dark"
             >
               Agenda tu Cita
             </a>
@@ -358,11 +336,7 @@ const NavbarBase = () => {
           <div className="flex items-center space-x-2 md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className={`inline-flex items-center justify-center p-2 rounded-md ${
-                scrolled 
-                  ? 'text-gray-700 hover:text-primary hover:bg-gray-100' 
-                  : 'text-white hover:text-white hover:bg-white/10'
-              } focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary`}
+              className="inline-flex items-center justify-center p-2 rounded-none text-gray-700 hover:text-primary focus:outline-none"
             >
               {isOpen ? (
                 <XMarkIcon className="block h-6 w-6" />
@@ -384,14 +358,14 @@ const NavbarBase = () => {
             transition={{ duration: 0.3 }}
             className="md:hidden overflow-hidden"
           >
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white/95 backdrop-blur-sm shadow-lg">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-100">
               {navigation.map((item) => (
                 item.href.includes('#') ? (
                   <a
                     key={item.name}
                     href={item.href}
                     onClick={(e) => scrollToSection(e, item.href)}
-                    className="text-gray-800 hover:text-primary hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                    className="text-gray-700 uppercase tracking-wider hover:text-primary block px-3 py-2 text-sm font-medium transition-colors"
                   >
                     {item.name}
                   </a>
@@ -399,7 +373,7 @@ const NavbarBase = () => {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className="text-gray-800 hover:text-primary hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                    className="text-gray-700 uppercase tracking-wider hover:text-primary block px-3 py-2 text-sm font-medium transition-colors"
                     onClick={() => setIsOpen(false)}
                   >
                     {item.name}
@@ -411,8 +385,8 @@ const NavbarBase = () => {
                 {isAuthenticated ? (
                   <div className="flex flex-col space-y-2">
                     <Link
-                      to={user?.role === 'ROLE_ADMIN' ? '/dashboard' : '/profile'}
-                      className="flex items-center text-gray-700 hover:text-primary px-3 py-2"
+                      to={user?.role === 'ROLE_ADMIN' ? '/dashboard' : (user?.role === 'ROLE_DOCTOR' ? '/doctor-dashboard' : '/profile')}
+                      className="flex items-center text-gray-700 hover:text-primary px-3 py-2 uppercase tracking-wider"
                       onClick={() => setIsOpen(false)}
                     >
                       <UserIcon className="h-5 w-5 mr-2" />
@@ -423,7 +397,7 @@ const NavbarBase = () => {
                         logout(navigate);
                         setIsOpen(false);
                       }}
-                      className="flex items-center text-gray-700 hover:text-primary px-3 py-2"
+                      className="flex items-center text-gray-700 hover:text-primary px-3 py-2 uppercase tracking-wider"
                     >
                       <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
                       Cerrar sesión
@@ -433,14 +407,14 @@ const NavbarBase = () => {
                   <div className="flex flex-col space-y-2">
                     <Link
                       to="/login"
-                      className="bg-white text-primary border border-primary hover:bg-primary hover:text-white block w-full text-center px-3 py-2 rounded-full text-sm font-medium transition-colors duration-200"
+                      className="text-primary border-b-2 border-primary hover:bg-primary/10 uppercase tracking-wider block w-full text-center px-3 py-2 text-sm font-medium transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       Iniciar sesión
                     </Link>
                     <Link
                       to="/register"
-                      className="bg-primary text-white hover:bg-primary-dark block w-full text-center px-3 py-2 rounded-full text-sm font-medium transition-colors duration-200"
+                      className="bg-primary text-white hover:bg-primary-dark uppercase tracking-wider block w-full text-center px-3 py-2 text-sm font-medium transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       Crear cuenta
@@ -452,7 +426,7 @@ const NavbarBase = () => {
               <a
                 href="#contacto"
                 onClick={(e) => scrollToSection(e, '#contacto')}
-                className="bg-primary text-white hover:bg-primary-dark block w-full text-center mt-2 px-3 py-2 rounded-full text-sm font-medium transition-colors duration-200"
+                className="bg-primary text-white hover:bg-primary-dark uppercase tracking-wider block w-full text-center mt-2 px-3 py-2 text-sm font-medium transition-colors"
               >
                 Agenda tu Cita
               </a>

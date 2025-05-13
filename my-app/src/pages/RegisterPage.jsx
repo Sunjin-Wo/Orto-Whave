@@ -86,7 +86,7 @@ const RegisterPage = () => {
         
         if (loginResponse.ok) {
           const userData = await loginResponse.json();
-          login(userData, 'auth-token', navigate);
+          login(formData.email, formData.password);
           alert('¡Registro exitoso! Bienvenido ' + formData.name);
         } else {
           // Si el login falla después del registro, redirigir a la página de login

@@ -1,6 +1,7 @@
 // Rutas de imágenes desde la carpeta public
 export const images = {
-  logo: '/images/ortowhite-logo.png',
+  logo: '/images/assets/logo.jpg', // Logo actualizado
+  ubicacion: '/images/assets/ubicacion.jpg', // Añadida imagen de ubicación
   diversidadDeporte: '/images/cerca-de-la-diversidad-deporte-mujer-formacion.jpg',
   medicoClinica: '/images/medico-con-un-paciente-en-la-clinica-de-fisioterapia.jpg',
   rehabilitacionFisica: '/images/paciente-haciendo-rehabilitacion-fisica-ayudado-por-terapeutas.jpg',

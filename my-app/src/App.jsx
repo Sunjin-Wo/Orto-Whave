@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import Dashboard from './components/Dashboard';
 import UserProfile from './components/UserProfile';
 import DoctorDashboard from './components/DoctorDashboard';
@@ -39,7 +39,7 @@ function App() {
               <Route path="/register" element={<RegisterPageWithNavigation />} />
               <Route path="/test" element={<TestPage />} />
               
-              {/* Rutas protegidas */}
+              {/* Rutas para administradores */}
               <Route 
                 path="/dashboard" 
                 element={
@@ -50,6 +50,18 @@ function App() {
                 } 
               />
               
+              {/* Rutas para personal administrativo - comparten el Dashboard con permisos limitados */}
+              <Route 
+                path="/staff" 
+                element={
+                  <ProtectedRoute 
+                    element={<Dashboard />} 
+                    requiredRole="ROLE_STAFF" 
+                  />
+                }
+              />
+              
+              {/* Rutas para pacientes */}
               <Route 
                 path="/profile" 
                 element={
@@ -60,6 +72,7 @@ function App() {
                 } 
               />
               
+              {/* Rutas para doctores */}
               <Route 
                 path="/doctor-dashboard" 
                 element={

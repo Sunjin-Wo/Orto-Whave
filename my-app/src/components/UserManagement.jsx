@@ -55,12 +55,58 @@ const UserManagement = () => {
         setPatients(patientsData);
       } else {
         console.error('Error al obtener usuarios');
+        loadMockData(); // Cargar datos de ejemplo si hay error
       }
     } catch (error) {
       console.error('Error al obtener usuarios:', error);
+      loadMockData(); // Cargar datos de ejemplo si hay error
     } finally {
       setLoading(false);
     }
+  };
+
+  // Función para cargar datos de ejemplo cuando hay error de conexión
+  const loadMockData = () => {
+    // Usuario administrador predefinido
+    const adminUser = {
+      id: 1,
+      firstName: 'Admin',
+      lastName: 'OWC',
+      email: 'admin@orthowave.co',
+      role: 'ROLE_ADMIN',
+      active: true,
+      createdAt: '2023-01-01'
+    };
+    
+    // Usuario doctor predefinido
+    const doctorUser = {
+      id: 2,
+      firstName: 'Doctor',
+      lastName: 'Ejemplo',
+      email: 'doctor@orthowave.co',
+      role: 'ROLE_DOCTOR',
+      active: true,
+      createdAt: '2023-01-15'
+    };
+    
+    const mockUsers = [
+      adminUser,
+      doctorUser,
+      {
+        id: 3,
+        firstName: 'Paciente',
+        lastName: 'Ejemplo',
+        email: 'paciente@ejemplo.com',
+        documentId: '5678901234',
+        documentType: 'CC',
+        phone: '3005678901',
+        role: 'ROLE_USER',
+        appointments: []
+      }
+    ];
+    
+    setUsers(mockUsers);
+    setPatients(mockUsers);
   };
 
   const handleSearch = (e) => {

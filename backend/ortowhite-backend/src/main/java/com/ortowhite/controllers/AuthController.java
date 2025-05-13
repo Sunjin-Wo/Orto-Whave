@@ -1,14 +1,26 @@
 package com.ortowhite.controllers;
 
 import com.ortowhite.models.Patient;
+import com.ortowhite.models.Role;
 import com.ortowhite.models.User;
+import com.ortowhite.repositories.RoleRepository;
+import com.ortowhite.repositories.UserRepository;
+import com.ortowhite.security.JwtTokenProvider;
+import com.ortowhite.security.UserPrincipal;
 import com.ortowhite.services.PatientService;
 import com.ortowhite.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,16 +31,28 @@ import java.util.Optional;
 public class AuthController {
 
     @Autowired
-    private UserService userService;
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
+    @Autowired
+    private UserService userService;
     
     @Autowired
     private PatientService patientService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody Map<String, Object> registerRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody Map<String, Object> registerRequest) {
         try {
             // Extraer datos del usuario
             String email = (String) registerRequest.get("email");
@@ -39,20 +63,27 @@ public class AuthController {
             String documentType = (String) registerRequest.get("documentType");
             String phone = (String) registerRequest.get("phone");
             
-            if (userService.existsByEmail(email)) {
-                return ResponseEntity.badRequest().body("Email ya está en uso");
+            if (userRepository.existsByEmail(email)) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Email ya está en uso"));
             }
+            
+            // Obtener el rol de usuario
+            Role userRole = roleRepository.findByName("ROLE_USER")
+                    .orElseThrow(() -> new RuntimeException("No se encontró el rol de usuario"));
             
             // Crear y guardar el usuario
             User user = new User();
             user.setEmail(email);
-            user.setPassword(password);
+            user.setPassword(passwordEncoder.encode(password));
             user.setFirstName(firstName);
             user.setLastName(lastName);
             user.setPhone(phone);
-            user.setRole("ROLE_USER");
+            user.setRole(userRole);
+            user.setActive(true);
+            user.setCreatedAt(new Date());
+            user.setUpdatedAt(new Date());
             
-            User savedUser = userService.registerUser(user);
+            User savedUser = userRepository.save(user);
             
             // Crear y guardar el paciente asociado al usuario
             Patient patient = new Patient();
@@ -73,37 +104,64 @@ public class AuthController {
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al registrar: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Error al registrar el usuario: " + e.getMessage()));
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginRequest) {
-        String email = loginRequest.get("email");
-        String password = loginRequest.get("password");
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody Map<String, String> loginRequest) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.get("email"),
+                            loginRequest.get("password")
+                    )
+            );
 
-        Optional<User> userOptional = userService.findByEmail(email);
-        
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            // Comprueba si la contraseña coincide O si es la contraseña del admin o paciente de ejemplo
-            if (passwordEncoder.matches(password, user.getPassword()) || 
-                (user.getEmail().equals("admin@ortowhite.com") && 
-                 user.getPassword().equals("$2a$10$rAYXjF0MzVn9TRhZC1QlHezHLH/2QcHrDjA3DFnGHoEQO.DwpJhPu") && 
-                 password.equals("admin123")) ||
-                (user.getEmail().equals("paciente@ejemplo.com") && password.equals("paciente123"))) {
-                
-                Map<String, Object> response = new HashMap<>();
-                response.put("id", user.getId());
-                response.put("email", user.getEmail());
-                response.put("firstName", user.getFirstName());
-                response.put("lastName", user.getLastName());
-                response.put("role", user.getRole());
-                
-                return ResponseEntity.ok(response);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = tokenProvider.generateToken(authentication);
+            
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            
+            // Actualizar el último inicio de sesión
+            User user = userRepository.findById(userPrincipal.getId()).orElse(null);
+            if (user != null) {
+                user.setLastLogin(new Date());
+                userRepository.save(user);
             }
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", jwt);
+            response.put("id", userPrincipal.getId());
+            response.put("email", userPrincipal.getEmail());
+            response.put("name", userPrincipal.getName());
+            response.put("role", userPrincipal.getRole());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Credenciales inválidas"));
+        }
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<?> checkToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && 
+                authentication.getPrincipal() instanceof UserPrincipal) {
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", userPrincipal.getId());
+            response.put("email", userPrincipal.getEmail());
+            response.put("name", userPrincipal.getName());
+            response.put("role", userPrincipal.getRole());
+            
+            return ResponseEntity.ok(response);
         }
         
-        return ResponseEntity.badRequest().body("Credenciales inválidas");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("message", "Token inválido o expirado"));
     }
 } 
