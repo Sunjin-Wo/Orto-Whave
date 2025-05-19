@@ -6,9 +6,9 @@ import {
   CalendarIcon, 
   UserIcon, 
   ClockIcon, 
-  CheckCircleIcon,
   ArrowRightOnRectangleIcon 
 } from '@heroicons/react/24/outline';
+import { UserCircleIcon } from '@heroicons/react/24/outline';
 
 const UserProfile = () => {
   const { user, logout } = useAuth();

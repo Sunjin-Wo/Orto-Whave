@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { EnvelopeIcon } from '@heroicons/react/24/outline';
+import { MapPinIcon, PhoneIcon } from '@heroicons/react/24/outline';
 
 const Contact = () => {
   const [formData, setFormData] = useState({

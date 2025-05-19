@@ -8,8 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
@@ -24,17 +22,12 @@ public class JwtTokenProvider {
 
     public String generateToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-
+        
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("id", userPrincipal.getId());
-        claims.put("email", userPrincipal.getUsername());
-        claims.put("role", userPrincipal.getRole());
         
         return Jwts.builder()
-                .setClaims(claims)
+                .setSubject(Long.toString(userPrincipal.getId()))
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
@@ -46,8 +39,8 @@ public class JwtTokenProvider {
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
-
-        return Long.parseLong(claims.get("id").toString());
+        
+        return Long.parseLong(claims.getSubject());
     }
 
     public boolean validateToken(String authToken) {
@@ -55,15 +48,15 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException ex) {
-            logger.error("Invalid JWT signature");
+            logger.error("Firma JWT inválida");
         } catch (MalformedJwtException ex) {
-            logger.error("Invalid JWT token");
+            logger.error("Token JWT inválido");
         } catch (ExpiredJwtException ex) {
-            logger.error("Expired JWT token");
+            logger.error("Token JWT expirado");
         } catch (UnsupportedJwtException ex) {
-            logger.error("Unsupported JWT token");
+            logger.error("Token JWT no soportado");
         } catch (IllegalArgumentException ex) {
-            logger.error("JWT claims string is empty");
+            logger.error("JWT claims string está vacío");
         }
         return false;
     }

@@ -20,10 +20,7 @@ const UserManagement = () => {
     birthDate: ''
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
+  // Definir fetchData antes de usarla en useEffect
   const fetchData = async () => {
     setLoading(true);
     
@@ -64,6 +61,10 @@ const UserManagement = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   // Función para cargar datos de ejemplo cuando hay error de conexión
   const loadMockData = () => {

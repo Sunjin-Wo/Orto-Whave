@@ -130,11 +130,6 @@ const NavbarBase = () => {
     }).format(price);
   };
 
-  const handleNavigation = (path) => {
-    navigate(path);
-    setIsOpen(false);
-  };
-
   const renderAuthButtons = () => {
     if (isAuthenticated) {
       return (

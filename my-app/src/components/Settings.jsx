@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { BellIcon, GlobeAltIcon, ShieldCheckIcon, PaintBrushIcon } from '@heroicons/react/24/outline';
+import { UserCircleIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { BellIcon, ShieldCheckIcon, PaintBrushIcon } from '@heroicons/react/24/outline';
 
 const Settings = () => {
   const [settings, setSettings] = useState({

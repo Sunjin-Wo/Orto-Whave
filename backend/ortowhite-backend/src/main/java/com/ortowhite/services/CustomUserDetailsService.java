@@ -25,7 +25,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         return UserPrincipal.create(user);
     }
 
-    // Este método se utiliza en el filtro JwtAuthenticationFilter
     @Transactional
     public UserDetails loadUserById(Long id) {
         User user = userRepository.findById(id)

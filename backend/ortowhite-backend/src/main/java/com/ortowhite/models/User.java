@@ -26,6 +26,15 @@ public class User {
     private String phone;
     private Boolean active;
     
+    @Column(name = "email_verified")
+    private Boolean emailVerified = false;
+    
+    @Column(name = "verification_code")
+    private String verificationCode;
+    
+    @Column(name = "verification_code_expiry")
+    private Date verificationCodeExpiry;
+    
     @Column(name = "profile_image")
     private String profileImage;
     
@@ -49,6 +58,7 @@ public class User {
         this.lastName = lastName;
         this.phone = phone;
         this.active = true;
+        this.emailVerified = false;
         this.createdAt = new Date();
         this.updatedAt = new Date();
     }
@@ -120,6 +130,30 @@ public class User {
     
     public void setActive(Boolean active) {
         this.active = active;
+    }
+    
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+    
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+    
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+    
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+    
+    public Date getVerificationCodeExpiry() {
+        return verificationCodeExpiry;
+    }
+    
+    public void setVerificationCodeExpiry(Date verificationCodeExpiry) {
+        this.verificationCodeExpiry = verificationCodeExpiry;
     }
     
     public String getProfileImage() {

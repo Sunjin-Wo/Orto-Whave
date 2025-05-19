@@ -31,8 +31,9 @@ public class PatientService {
         return patientRepository.findByDocumentId(documentId);
     }
 
-    public Optional<Patient> getPatientByUser(User user) {
-        return patientRepository.findByUser(user);
+    public Patient getPatientByUser(User user) {
+        return patientRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado para el usuario"));
     }
 
     public void deletePatient(Long id) {

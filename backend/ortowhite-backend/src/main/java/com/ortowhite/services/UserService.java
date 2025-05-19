@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,31 +19,29 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User registerUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public User saveUser(User user) {
+        if (user.getPassword() != null && !user.getPassword().startsWith("$2a$")) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        if (user.getCreatedAt() == null) {
+            user.setCreatedAt(new Date());
+        }
+        user.setUpdatedAt(new Date());
         return userRepository.save(user);
     }
 
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
-    public Optional<User> findById(Long id) {
+    public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
-    
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
-    
-    public User updateUser(User user) {
-        return userRepository.save(user);
-    }
-    
+
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
