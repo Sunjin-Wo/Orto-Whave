@@ -1,153 +1,266 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 const AboutUs = () => {
-  // Animaciones
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 }
+  const doctors = [
+    {
+      id: 1,
+      name: "[Nombre del Doctor]",
+      specialty: "[Especialidad]",
+      image: "/images/doctors/doctor-placeholder.jpg",
+      education: [
+        "• [Título Universitario]",
+        "• [Especialización]",
+        "• [Subespecialización]"
+      ],
+      experience: [
+        "• [Experiencia 1]",
+        "• [Experiencia 2]",
+        "• [Experiencia 3]"
+      ],
+      memberships: [
+        "• [Membresía 1]",
+        "• [Membresía 2]"
+      ]
+    },
+    {
+      id: 2,
+      name: "[Nombre del Doctor]",
+      specialty: "[Especialidad]",
+      image: "/images/doctors/doctor-placeholder.jpg",
+      education: [
+        "• [Título Universitario]",
+        "• [Especialización]",
+        "• [Subespecialización]"
+      ],
+      experience: [
+        "• [Experiencia 1]",
+        "• [Experiencia 2]",
+        "• [Experiencia 3]"
+      ],
+      memberships: [
+        "• [Membresía 1]",
+        "• [Membresía 2]"
+      ]
+    },
+    {
+      id: 3,
+      name: "[Nombre del Doctor]",
+      specialty: "[Especialidad]",
+      image: "/images/doctors/doctor-placeholder.jpg",
+      education: [
+        "• [Título Universitario]",
+        "• [Especialización]",
+        "• [Subespecialización]"
+      ],
+      experience: [
+        "• [Experiencia 1]",
+        "• [Experiencia 2]",
+        "• [Experiencia 3]"
+      ],
+      memberships: [
+        "• [Membresía 1]",
+        "• [Membresía 2]"
+      ]
     }
-  };
-
-  // Datos para la sección de valores
-  const values = [
-    { id: 1, title: "Excelencia médica", description: "Buscamos constantemente superar las expectativas de nuestros pacientes a través de un servicio de máxima calidad y precisión." },
-    { id: 2, title: "Ética profesional", description: "Actuamos con integridad y honestidad en cada decisión, priorizando siempre el bienestar del paciente." },
-    { id: 3, title: "Empatía", description: "Comprendemos y conectamos con las necesidades emocionales y físicas de cada persona." },
-    { id: 4, title: "Responsabilidad", description: "Asumimos el compromiso de brindar el mejor cuidado posible, siendo conscientes del impacto de nuestro trabajo." },
-    { id: 5, title: "Trabajo en equipo", description: "Colaboramos estrechamente para ofrecer soluciones integrales que beneficien a nuestros pacientes." }
   ];
 
   return (
-    <div id="nosotros" className="bg-white py-16 md:py-24">
+    <div className="bg-white py-16" id="nosotros">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Encabezado con animación */}
         <motion.div 
-          className="mb-16 text-center"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Sobre Nosotros
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            OWC Colombia SAS
           </h2>
-          <div className="w-24 h-1 bg-primary mx-auto mb-8"></div>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Somos una IPS especializada en servicios de salud con énfasis en Ortopedia y Traumatología,
+            comprometidos con la excelencia y el bienestar de nuestros pacientes.
+          </p>
         </motion.div>
 
-        {/* Sobre Nosotros */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
+        {/* Grid de información institucional */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="aspect-video rounded-lg overflow-hidden shadow-xl"
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="space-y-8"
           >
-            <img 
-              src="/images/DoctorAtendiendoPaciente.webp" 
-              alt="Profesional médico atendiendo a un paciente" 
-              className="w-full h-full object-cover"
-            />
+            <div>
+              <h3 className="text-2xl font-bold text-primary mb-4">Misión</h3>
+              <p className="text-gray-600">
+                Somos una IPS de Ortopedia y Traumatología de alta calidad que busca satisfacer y mejorar 
+                la calidad de vida de nuestros pacientes física y emocionalmente. Ofrecemos atención 
+                personalizada enfocada en la calidez y el trato humano.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold text-primary mb-4">Visión</h3>
+              <p className="text-gray-600">
+                En el 2030 seremos un centro de vanguardia líder en Bogotá, con reconocimiento nacional 
+                e internacional, superando las expectativas de nuestros pacientes en las áreas de Ortopedia, 
+                Neurocirugía y Medicina General.
+              </p>
+            </div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="flex flex-col justify-center"
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">
-              En OWC Orthowave Colombia
-            </h3>
-            <p className="text-gray-600 mb-4 leading-relaxed">
-              Nos especializamos en el cuidado y tratamiento de los huesos, músculos y articulaciones, ofreciendo soluciones médicas y quirúrgicas a personas de todas las edades. Nuestro enfoque está centrado en el paciente: combinamos la experiencia clínica con tecnología avanzada para ayudarte a recuperar tu movilidad y bienestar.
+            <div className="bg-gray-50 p-8 rounded-xl shadow-lg">
+              <h3 className="text-2xl font-bold text-primary mb-6">Valores Corporativos</h3>
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Compromiso</h4>
+                  <p className="text-gray-600 text-sm">
+                    Soluciones médicas efectivas y atención de máxima calidad.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Seguridad</h4>
+                  <p className="text-gray-600 text-sm">
+                    Rigurosas medidas en todos los ámbitos de nuestra actividad.
             </p>
-            <p className="text-gray-600 leading-relaxed">
-              Contamos con un equipo de especialistas en ortopedia y traumatología altamente calificados, comprometidos con brindar una atención cálida, personalizada y basada en evidencia científica. Nos esforzamos por ofrecer un entorno seguro, confiable y enfocado en resultados reales.
-            </p>
+        </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Compasión</h4>
+                  <p className="text-gray-600 text-sm">
+                    Atención médica cercana y relación basada en la confianza.
+                  </p>
+              </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Innovación</h4>
+                  <p className="text-gray-600 text-sm">
+                    Tecnología y conocimientos médicos de vanguardia.
+                  </p>
+            </div>
+              </div>
+            </div>
           </motion.div>
         </div>
 
-        {/* Misión y Visión */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-          <motion.div 
-            className="bg-gray-50 p-8 rounded-lg shadow-md"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mr-4">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-800">Misión</h3>
-            </div>
-            <p className="text-gray-600 leading-relaxed">
-              Brindar servicios ortopédicos de alta calidad que mejoren la salud musculoesquelética de nuestros pacientes, promoviendo una recuperación efectiva y una vida sin dolor.
-            </p>
-          </motion.div>
-
-          <motion.div 
-            className="bg-gray-50 p-8 rounded-lg shadow-md"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-          >
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mr-4">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-800">Visión</h3>
-            </div>
-            <p className="text-gray-600 leading-relaxed">
-              Ser un centro de referencia en ortopedia a nivel nacional, reconocidos por la excelencia médica, la innovación constante y el trato humano hacia cada paciente.
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Valores */}
+        {/* Sección de doctores */}
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
         >
-          <div className="text-center mb-12">
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Nuestros Valores
+          <h3 className="text-3xl font-bold text-gray-900 mb-8">
+            Nuestro Equipo Médico
             </h3>
-            <div className="w-20 h-1 bg-primary mx-auto"></div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {values.map((value) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {doctors.map((doctor) => (
               <motion.div
-                key={value.id}
-                variants={itemVariants}
-                className="bg-white rounded-lg shadow-md p-6 border-l-4 border-primary hover:shadow-lg transition-shadow duration-300"
+                key={doctor.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3 }}
+                className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300"
+                onClick={() => setSelectedDoctor(doctor)}
               >
-                <h4 className="text-xl font-semibold text-gray-800 mb-2">{value.title}</h4>
-                <p className="text-gray-600">{value.description}</p>
+                <div className="aspect-w-3 aspect-h-4">
+                  <img
+                    src={doctor.image}
+                    alt={doctor.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-bold text-gray-900 mb-2">{doctor.name}</h4>
+                  <p className="text-primary font-medium">{doctor.specialty}</p>
+                </div>
               </motion.div>
             ))}
           </div>
         </motion.div>
+
+        {/* Modal del doctor */}
+        <AnimatePresence>
+          {selectedDoctor && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+              onClick={() => setSelectedDoctor(null)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+                  <h3 className="text-2xl font-bold text-gray-900">{selectedDoctor.name}</h3>
+                  <button
+                    onClick={() => setSelectedDoctor(null)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <XMarkIcon className="h-6 w-6" />
+                  </button>
+                </div>
+                <div className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                      <img
+                        src={selectedDoctor.image}
+                        alt={selectedDoctor.name}
+                        className="w-full h-auto rounded-lg shadow-lg"
+                      />
+                      <div className="mt-4">
+                        <h4 className="text-xl font-bold text-primary mb-2">{selectedDoctor.specialty}</h4>
+                      </div>
+                    </div>
+                    <div className="space-y-6">
+                      <div>
+                        <h4 className="text-lg font-bold text-gray-900 mb-2">Educación</h4>
+                        <ul className="space-y-2 text-gray-600">
+                          {selectedDoctor.education.map((item, index) => (
+                            <li key={index}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-bold text-gray-900 mb-2">Experiencia</h4>
+                        <ul className="space-y-2 text-gray-600">
+                          {selectedDoctor.experience.map((item, index) => (
+                            <li key={index}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-bold text-gray-900 mb-2">Membresías</h4>
+                        <ul className="space-y-2 text-gray-600">
+                          {selectedDoctor.memberships.map((item, index) => (
+                            <li key={index}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

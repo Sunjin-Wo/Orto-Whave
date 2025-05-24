@@ -74,48 +74,27 @@ const NavbarBase = () => {
   const scrollToSection = (e, href) => {
     e.preventDefault();
     
-    // Si estamos en una página diferente a la principal, primero navegamos a la página principal
-    if (location.pathname !== '/') {
-      navigate('/');
-      // Esperar un poco para que la página se cargue antes de intentar desplazarse
-      setTimeout(() => {
-        const sectionId = href.replace('/#', '');
-        const element = document.getElementById(sectionId);
-        if (element) {
-          const offset = 80; // Altura del navbar
-          const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-          const offsetPosition = elementPosition - offset;
-
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-        }
-      }, 500); // Aumentamos el tiempo de espera para asegurar que la página se cargue completamente
-    } else {
+    const handleScroll = () => {
       const sectionId = href.replace('/#', '');
       const element = document.getElementById(sectionId);
       if (element) {
-        const offset = 80; // Altura del navbar
-        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-        const offsetPosition = elementPosition - offset;
+        const navbarHeight = 64; // altura del navbar en píxeles
+        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - navbarHeight;
 
-        // Si es la sección de contacto, asegurarse de que se vea desde el principio
-        if (sectionId === 'contacto') {
-          // Usar un pequeño retraso para asegurar que la animación funcione correctamente
-          setTimeout(() => {
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: 'smooth'
-            });
-          }, 50);
-        } else {
           window.scrollTo({
             top: offsetPosition,
             behavior: 'smooth'
           });
         }
-      }
+    };
+
+    if (location.pathname !== '/') {
+      navigate('/');
+      // Esperar a que la navegación se complete y el nuevo contenido se monte
+      setTimeout(handleScroll, 100);
+    } else {
+      handleScroll();
     }
 
     setIsOpen(false);
@@ -183,6 +162,17 @@ const NavbarBase = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0 flex items-center">
+            <Link to="/" className="flex items-center">
+              <img
+                src="/images/logo.jpg"
+                alt="OWC Orthowave Colombia"
+                className="h-12 w-auto"
+              />
+            </Link>
+          </div>
+
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center">
             {navigation.map((item) => (
@@ -321,7 +311,7 @@ const NavbarBase = () => {
             <a
               href="#contacto"
               onClick={(e) => scrollToSection(e, '#contacto')}
-              className="uppercase tracking-wider px-5 py-1.5 text-sm font-medium transition-all duration-300 text-white bg-primary hover:bg-primary-dark"
+              className="hidden md:block uppercase tracking-wider px-5 py-1.5 text-sm font-medium transition-all duration-300 text-white bg-primary hover:bg-primary-dark"
             >
               Agenda tu Cita
             </a>

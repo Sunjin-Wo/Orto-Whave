@@ -1,73 +1,88 @@
 import React from 'react';
-import Image from './Image';
-import { images } from '../assets';
 import { motion } from 'framer-motion';
 
-const services = [
-  {
-    title: 'Fisioterapia',
-    description: 'Tratamientos personalizados para recuperación y rehabilitación física.',
-    image: images.sesionFisioterapia,
-  },
-  {
-    title: 'Rehabilitación Física',
-    description: 'Programas especializados para recuperar la movilidad y funcionalidad.',
-    image: images.rehabilitacionFisica,
-  },
-  {
-    title: 'Prótesis y Ortesis',
-    description: 'Soluciones avanzadas en prótesis y dispositivos ortopédicos.',
-    image: images.protesisPierna,
-  },
-  {
-    title: 'Diagnóstico Especializado',
-    description: 'Evaluación experta de condiciones ortopédicas.',
-    image: images.fracturaOsea,
-  },
-];
-
 const Services = () => {
-  return (
-    <section id="servicios" className="py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-            Nuestros Servicios
-          </h2>
-          <p className="mt-4 text-lg text-gray-500">
-            Ofrecemos una amplia gama de servicios ortopédicos y de rehabilitación
-          </p>
-        </div>
+  const services = [
+    {
+      title: "Rehabilitación Física",
+      subtitle: "Terapia Especializada",
+      description: "Programas personalizados de rehabilitación para recuperar tu movilidad y calidad de vida.",
+      image: "/images/services/asistente-medico-ayudando-al-paciente-con-ejercicios-de-fisioterapia.jpg"
+    },
+    {
+      title: "Medicina Deportiva",
+      subtitle: "Recuperación Deportiva",
+      description: "Tratamientos especializados para atletas y deportistas, enfocados en un retorno seguro a la actividad.",
+      image: "/images/services/cerca-de-la-diversidad-deporte-mujer-formacion.jpg"
+    },
+    {
+      title: "Diagnóstico Avanzado",
+      subtitle: "Tecnología de Punta",
+      description: "Evaluación precisa de lesiones mediante tecnología de imagen avanzada y diagnóstico experto.",
+      image: "/images/services/fractura-osea-del-pie-y-la-pierna-en-un-paciente-masculino-que-esta-siendo-examinado-por-una-doctora-en-un-hospital.jpg"
+    },
+    {
+      title: "Terapia Física",
+      subtitle: "Atención Personalizada",
+      description: "Tratamientos terapéuticos individualizados para optimizar tu recuperación y bienestar.",
+      image: "/images/services/paciente-haciendo-rehabilitacion-fisica-ayudado-por-terapeutas.jpg"
+    }
+  ];
 
-        <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+  return (
+    <div className="bg-white text-black" id="servicios">
+      <div className="max-w-[2000px] mx-auto">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center py-16"
+        >
+          <h2 className="text-5xl font-bold mb-4">
+            Servicios Especializados
+          </h2>
+          <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-600">
+            Experiencia médica de clase mundial en ortopedia y rehabilitación
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2">
           {services.map((service, index) => (
             <motion.div
-              key={service.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-lg shadow-lg overflow-hidden"
+              key={index}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.2 }}
+              className="relative group cursor-pointer h-[600px] overflow-hidden"
             >
-              <div className="h-48 relative">
-                <Image
-                  src={service.image}
-                  alt={service.title}
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {service.title}
-                </h3>
-                <p className="mt-2 text-gray-500">
-                  {service.description}
-                </p>
+              <div 
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                style={{ backgroundImage: `url(${service.image})` }}
+              />
+              <div className="absolute inset-0 bg-white bg-opacity-10 transition-opacity duration-500 group-hover:bg-opacity-0" />
+              
+              <div className="absolute inset-0 flex flex-col justify-end p-12 transition-transform duration-500 group-hover:translate-y-[-10px]">
+                <div className="bg-white bg-opacity-90 p-8 rounded-lg transform transition-all duration-500 group-hover:bg-opacity-95 shadow-lg">
+                  <p className="text-xl mb-2 text-gray-600">{service.subtitle}</p>
+                  <h3 className="text-4xl font-bold mb-4 text-black">{service.title}</h3>
+                  <p className="text-lg text-gray-800 opacity-90 group-hover:opacity-100 transition-opacity duration-500">
+                    {service.description}
+                  </p>
+                  <button className="mt-6 inline-flex items-center text-lg font-semibold text-black hover:text-gray-700 transition-colors duration-300">
+                    DESCUBRIR
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 ml-2 transition-transform duration-300 group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

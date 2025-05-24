@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
@@ -27,6 +27,10 @@ const RegisterPage = () => {
   const [userId, setUserId] = useState(null);
   const [verificationCode, setVerificationCode] = useState('');
   const [debugVerificationCode, setDebugVerificationCode] = useState('');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

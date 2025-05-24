@@ -11,6 +11,14 @@ import RouteDebugger from './components/RouteDebugger'; // Componente de depurac
 import { AuthProvider, withAuthNavigation } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { Toaster } from 'react-hot-toast';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Hero from './components/Hero';
+import Services from './components/Services';
+import AboutUs from './components/AboutUs';
+import Contact from './components/Contact';
+import Alliances from './components/Alliances';
+import Products from './components/Products';
 
 // Envolvemos los componentes que necesitan acceso a la navegación
 const LoginPageWithNavigation = withAuthNavigation(LoginPage);
@@ -21,7 +29,7 @@ function App() {
     <AuthProvider>
       <Router>
         <CartProvider>
-          <div className="min-h-screen bg-gray-50 flex flex-col">
+          <div className="min-h-screen flex flex-col">
             <Toaster 
               position="top-right"
               toastOptions={{
@@ -32,9 +40,20 @@ function App() {
                 },
               }}
             />
+            <Navbar />
+            <main className="flex-grow">
             <Routes>
               {/* Rutas públicas */}
-              <Route path="/" element={<HomePage />} />
+                <Route path="/" element={
+                  <>
+                    <Hero />
+                    <Services />
+                    <Products />
+                    <AboutUs />
+                    <Alliances />
+                    <Contact />
+                  </>
+                } />
               <Route path="/login" element={<LoginPageWithNavigation />} />
               <Route path="/register" element={<RegisterPageWithNavigation />} />
               <Route path="/test" element={<TestPage />} />
@@ -83,11 +102,11 @@ function App() {
                 } 
               />
               
-              {/* Ruta para cualquier otra dirección no definida */}
+                {/* Ruta por defecto */}
               <Route path="*" element={<HomePage />} />
             </Routes>
-            
-            {/* Componente de depuración */}
+            </main>
+            <Footer />
             <RouteDebugger />
           </div>
         </CartProvider>

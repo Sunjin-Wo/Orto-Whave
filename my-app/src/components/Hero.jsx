@@ -1,202 +1,133 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { images } from '../assets';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+
+const Hero = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
 const slides = [
   {
-    image: images.medicoClinica,
-    title: "Excelencia en OWC Orthowave Colombia",
-    description: "Tecnología de vanguardia y atención personalizada para tu bienestar"
+      image: '/images/slider1.jpg',
+      title: 'Bienvenidos a OWC Colombia',
+      subtitle: 'Expertos en Ortopedia y Traumatología',
+      description: 'Brindamos atención especializada con los más altos estándares de calidad'
   },
   {
-    image: images.rehabilitacionFisica,
-    title: "Rehabilitación Integral",
-    description: "Recupera tu movilidad con nuestro equipo especializado"
+      image: '/images/slider2.jpg',
+      title: 'Tecnología de Vanguardia',
+      subtitle: 'Equipos de última generación',
+      description: 'Contamos con la más avanzada tecnología para tu tratamiento'
   },
   {
-    image: images.protesisPierna,
-    title: "Soluciones Ortopédicas",
-    description: "Prótesis y órtesis de última generación adaptadas a tus necesidades"
-  },
-  {
-    image: images.sesionFisioterapia,
-    title: "Fisioterapia Avanzada",
-    description: "Tratamientos personalizados para una recuperación efectiva"
-  }
-];
+      image: '/images/slider3.jpg',
+      title: 'Atención Personalizada',
+      subtitle: 'Equipo médico especializado',
+      description: 'Nuestro equipo está comprometido con tu bienestar'
+    }
+  ];
 
-const Hero = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  useEffect(() => {
+    let interval;
+    if (isAutoPlaying) {
+      interval = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % slides.length);
+      }, 5000);
+    }
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, slides.length]);
 
-  const paginate = useCallback((newDirection) => {
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
     setIsAutoPlaying(false);
-    setDirection(newDirection);
-    setCurrentIndex((prevIndex) => (prevIndex + newDirection + slides.length) % slides.length);
-  }, []);
-
-  useEffect(() => {
-    if (!isAutoPlaying) return;
-
-    const timer = setInterval(() => {
-      setDirection(1);
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
-    }, 6000);
-
-    return () => clearInterval(timer);
-  }, [isAutoPlaying]);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'ArrowLeft') {
-        paginate(-1);
-      } else if (e.key === 'ArrowRight') {
-        paginate(1);
-      } else if (e.key === ' ') {
-        setIsAutoPlaying(prev => !prev);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [paginate]);
-
-  const slideVariants = {
-    enter: (direction) => ({
-      x: direction > 0 ? '100%' : '-100%',
-      opacity: 0
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1
-    },
-    exit: (direction) => ({
-      zIndex: 0,
-      x: direction < 0 ? '100%' : '-100%',
-      opacity: 0
-    })
   };
 
-  const swipeConfidenceThreshold = 10000;
-  const swipePower = (offset, velocity) => {
-    return Math.abs(offset) * velocity;
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    setIsAutoPlaying(false);
+  };
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+    setIsAutoPlaying(false);
   };
 
   return (
-    <div 
-      className="relative h-screen overflow-hidden bg-black"
-      role="region"
-      aria-label="Image carousel"
-    >
-      <AnimatePresence initial={false} custom={direction}>
+    <div className="relative h-screen pt-16" id="inicio">
+      <div className="absolute inset-0 top-16 overflow-hidden">
+        <AnimatePresence initial={false}>
         <motion.div
-          key={currentIndex}
-          custom={direction}
-          variants={slideVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{
-            x: { type: "spring", stiffness: 300, damping: 30 },
-            opacity: { duration: 0.5 }
-          }}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={1}
-          onDragEnd={(e, { offset, velocity }) => {
-            const swipe = swipePower(offset.x, velocity.x);
-            if (swipe < -swipeConfidenceThreshold) {
-              paginate(1);
-            } else if (swipe > swipeConfidenceThreshold) {
-              paginate(-1);
-            }
-          }}
+            key={currentSlide}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
           className="absolute inset-0"
-          onMouseEnter={() => setIsAutoPlaying(false)}
-          onMouseLeave={() => setIsAutoPlaying(true)}
         >
       <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat transform transition-transform duration-1000"
-        style={{
-              backgroundImage: `url(${slides[currentIndex].image})`,
-              backgroundPosition: 'center 20%'
-        }}
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${slides[currentSlide].image})` }}
       >
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60" />
+              <div className="absolute inset-0 bg-black bg-opacity-50" />
       </div>
+          </motion.div>
+        </AnimatePresence>
 
-          {/* Content Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center px-4 md:px-8">
+        {/* Contenido del slide */}
+        <div className="relative h-full flex items-center justify-center text-white px-4">
           <motion.div
+            key={`content-${currentSlide}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="text-center max-w-4xl"
+            className="text-center max-w-4xl mx-auto"
             >
-              <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 tracking-tight drop-shadow-lg">
-                {slides[currentIndex].title}
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              {slides[currentSlide].title}
+            </h1>
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 text-primary">
+              {slides[currentSlide].subtitle}
               </h2>
-              <p className="text-xl md:text-2xl text-gray-100 max-w-3xl mx-auto font-light drop-shadow-md">
-                {slides[currentIndex].description}
-              </p>
+            <p className="text-lg md:text-xl mb-8">
+              {slides[currentSlide].description}
+            </p>
+            <a
+              href="#contacto"
+              className="inline-block bg-primary hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-lg transition-colors duration-300"
+            >
+              Agenda tu Cita
+            </a>
           </motion.div>
         </div>
-        </motion.div>
-      </AnimatePresence>
 
-      {/* Progress Bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-800">
-        <motion.div
-          className="h-full bg-white"
-          initial={{ width: "0%" }}
-          animate={{ width: isAutoPlaying ? "100%" : "0%" }}
-          transition={{ duration: 6, ease: "linear", repeat: isAutoPlaying ? Infinity : 0 }}
-          key={`progress-${currentIndex}`}
-        />
-      </div>
-
-      {/* Navigation Dots */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-3 z-20">
+        {/* Controles del carrusel */}
+        <div className="absolute bottom-8 left-0 right-0 flex justify-center space-x-4">
         {slides.map((_, index) => (
           <button
-            key={`dot-${index}`}
-            onClick={() => {
-              setDirection(index > currentIndex ? 1 : -1);
-              setCurrentIndex(index);
-              setIsAutoPlaying(false);
-            }}
+              key={index}
+              onClick={() => goToSlide(index)}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === currentIndex 
-                ? 'bg-white w-8' 
-                : 'bg-white/70 hover:bg-white'
+                currentSlide === index ? 'bg-primary scale-125' : 'bg-white opacity-50 hover:opacity-75'
             }`}
-            aria-label={`Ir a diapositiva ${index + 1}`}
-            aria-current={index === currentIndex ? 'true' : 'false'}
           />
         ))}
       </div>
 
-      {/* Arrow Navigation */}
+        {/* Botones de navegación */}
       <button
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 p-3 rounded-full bg-black/50 hover:bg-black/70 transition-colors duration-300 z-20 focus:outline-none focus:ring-2 focus:ring-white"
-        onClick={() => paginate(-1)}
-        aria-label="Diapositiva anterior"
-        type="button"
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-2 transition-all duration-300"
       >
-        <ChevronLeftIcon className="w-8 h-8 text-white" />
+          <ChevronLeftIcon className="h-8 w-8 text-white" />
       </button>
       <button
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 p-3 rounded-full bg-black/50 hover:bg-black/70 transition-colors duration-300 z-20 focus:outline-none focus:ring-2 focus:ring-white"
-        onClick={() => paginate(1)}
-        aria-label="Siguiente diapositiva"
-        type="button"
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-2 transition-all duration-300"
       >
-        <ChevronRightIcon className="w-8 h-8 text-white" />
+          <ChevronRightIcon className="h-8 w-8 text-white" />
       </button>
+      </div>
     </div>
   );
 };
