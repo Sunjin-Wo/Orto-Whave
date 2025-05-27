@@ -8,19 +8,19 @@ const Hero = () => {
 
 const slides = [
   {
-      image: '/images/slider1.jpg',
+      image: '/images/slider1.webp',
       title: 'Bienvenidos a OWC Colombia',
       subtitle: 'Expertos en Ortopedia y Traumatología',
       description: 'Brindamos atención especializada con los más altos estándares de calidad'
   },
   {
-      image: '/images/slider2.jpg',
+      image: '/images/slider2.webp',
       title: 'Tecnología de Vanguardia',
       subtitle: 'Equipos de última generación',
       description: 'Contamos con la más avanzada tecnología para tu tratamiento'
   },
   {
-      image: '/images/slider3.jpg',
+      image: '/images/slider3.webp',
       title: 'Atención Personalizada',
       subtitle: 'Equipo médico especializado',
       description: 'Nuestro equipo está comprometido con tu bienestar'

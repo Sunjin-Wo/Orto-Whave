@@ -45,9 +45,9 @@ const Alliances = () => {
     },
     {
       name: "Clínica Azul",
-      logo: "/images/Logos/clinica azul.webp",
+      logo: "/images/Logos/clinicaazul.webp",
       description: "Excelencia en atención hospitalaria",
-      backgroundImage: "/images/Logos/clinica azul.webp",
+      backgroundImage: "/images/Logos/clinicaazul.webp"
     }
   ];
 

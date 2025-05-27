@@ -1,33 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import ServiceModal from './ServiceModal';
 
 const Services = () => {
+  const [selectedService, setSelectedService] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const services = [
     {
       title: "Rehabilitación Física",
       subtitle: "Terapia Especializada",
       description: "Programas personalizados de rehabilitación para recuperar tu movilidad y calidad de vida.",
-      image: "/images/services/asistente-medico-ayudando-al-paciente-con-ejercicios-de-fisioterapia.jpg"
+      image: "/images/DoctorAtendiendoPaciente.webp"
     },
     {
       title: "Medicina Deportiva",
       subtitle: "Recuperación Deportiva",
       description: "Tratamientos especializados para atletas y deportistas, enfocados en un retorno seguro a la actividad.",
-      image: "/images/services/cerca-de-la-diversidad-deporte-mujer-formacion.jpg"
+      image: "/images/primer-plano-de-hombre-con-pierna-mecanica-corriendo-deportista-con-pantalones-cortos-azules-y-zapatillas-blancas-fotografiadas-dur.webp"
     },
     {
       title: "Diagnóstico Avanzado",
       subtitle: "Tecnología de Punta",
       description: "Evaluación precisa de lesiones mediante tecnología de imagen avanzada y diagnóstico experto.",
-      image: "/images/services/fractura-osea-del-pie-y-la-pierna-en-un-paciente-masculino-que-esta-siendo-examinado-por-una-doctora-en-un-hospital.jpg"
+      image: "/images/medico-con-un-paciente-en-la-clinica-de-fisioterapia.webp"
     },
     {
       title: "Terapia Física",
       subtitle: "Atención Personalizada",
       description: "Tratamientos terapéuticos individualizados para optimizar tu recuperación y bienestar.",
-      image: "/images/services/paciente-haciendo-rehabilitacion-fisica-ayudado-por-terapeutas.jpg"
+      image: "/images/mujer-que-tiene-una-sesion-de-fisioterapia.webp"
     }
   ];
+
+  const handleServiceClick = (service) => {
+    setSelectedService(service);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="bg-white text-black" id="servicios">
@@ -56,6 +65,7 @@ const Services = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
               className="relative group cursor-pointer h-[600px] overflow-hidden"
+              onClick={() => handleServiceClick(service)}
             >
               <div 
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
@@ -82,6 +92,12 @@ const Services = () => {
           ))}
         </div>
       </div>
+
+      <ServiceModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        service={selectedService}
+      />
     </div>
   );
 };

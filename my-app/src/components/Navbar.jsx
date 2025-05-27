@@ -166,7 +166,7 @@ const NavbarBase = () => {
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center">
               <img
-                src="/images/logo.jpg"
+                src="/images/White logo - no background_page-0001.webp"
                 alt="OWC Orthowave Colombia"
                 className="h-12 w-auto"
               />
