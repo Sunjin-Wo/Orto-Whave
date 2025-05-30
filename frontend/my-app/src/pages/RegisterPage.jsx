@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
+import api from '../services/api';
 
 // URL base de la API (usa la variable de entorno o la URL por defecto)
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
@@ -13,13 +14,12 @@ const RegisterPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    documentId: '',
-    documentType: 'CC',
-    phone: ''
+    phoneNumber: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -33,79 +33,32 @@ const RegisterPage = () => {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    if (formData.password !== formData.confirmPassword) {
+      toast.error('Las contraseñas no coinciden');
+      return;
+    }
 
     try {
-      if (formData.password !== formData.confirmPassword) {
-        setError('Las contraseñas no coinciden');
-        setLoading(false);
-        return;
-      }
-      
-      if (!formData.documentId) {
-        setError('El documento de identidad es obligatorio');
-        setLoading(false);
-        return;
-      }
-      
-      // Extraer nombre y apellido
-      const nameParts = formData.name.split(' ');
-      const firstName = nameParts[0];
-      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
-      
-      // Guardar la contraseña en localStorage para el inicio de sesión automático después de verificar
-      localStorage.setItem(`temp_pwd_${formData.email}`, formData.password);
-      
-      // Enviar datos al backend para registro
-      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          firstName: firstName,
-          lastName: lastName,
-          documentId: formData.documentId,
-          documentType: formData.documentType || 'CC',
-          phone: formData.phone || ''
-        })
+      const response = await api.post('/auth/register', {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        phoneNumber: formData.phoneNumber,
       });
       
-      if (response.ok) {
-        const data = await response.json();
-        toast.success('Usuario registrado. Revisa tu correo para el código de verificación.');
-        setUserId(data.userId);
-        // Mostrar el código de verificación para debug
-        if (data.verificationCode) {
-          setDebugVerificationCode(data.verificationCode);
-        } else {
-          // Intentar obtener el código del log del servidor
-          console.log("Verifica tu correo para el código de verificación");
-        }
-        setIsVerifying(true);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Error en el registro');
-        toast.error(errorData.message || 'Error en el registro');
-      }
+      toast.success('¡Registro exitoso! Por favor inicia sesión.');
+      navigate('/login');
     } catch (error) {
-      console.error("Error completo:", error);
-      setError('Error en la conexión con el servidor');
-      toast.error('Error en la conexión con el servidor');
-    } finally {
-      setLoading(false);
+      toast.error(error.response?.data?.message || 'Error al registrarse');
     }
   };
 
@@ -301,149 +254,88 @@ const RegisterPage = () => {
               </form>
             ) : (
               <form className="space-y-6" onSubmit={handleSubmit}>
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                    Nombre completo
-                  </label>
-                  <div className="mt-1">
+                <div className="rounded-md shadow-sm -space-y-px">
+                  <div>
                     <input
-                      id="name"
-                      name="name"
+                      id="firstName"
+                      name="firstName"
                       type="text"
                       required
-                      value={formData.name}
+                      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      placeholder="Nombre"
+                      value={formData.firstName}
                       onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                      placeholder="Nombre y apellidos"
                     />
                   </div>
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                    Correo electrónico
-                  </label>
-                  <div className="mt-1">
+                  <div>
+                    <input
+                      id="lastName"
+                      name="lastName"
+                      type="text"
+                      required
+                      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      placeholder="Apellido"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
                     <input
                       id="email"
                       name="email"
                       type="email"
-                      autoComplete="email"
                       required
+                      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      placeholder="Correo Electrónico"
                       value={formData.email}
                       onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                     />
                   </div>
-                </div>
-
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                    Contraseña
-                  </label>
-                  <div className="mt-1">
+                  <div>
+                    <input
+                      id="phoneNumber"
+                      name="phoneNumber"
+                      type="tel"
+                      required
+                      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      placeholder="Número de Teléfono"
+                      value={formData.phoneNumber}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
                     <input
                       id="password"
                       name="password"
                       type="password"
                       required
+                      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      placeholder="Contraseña"
                       value={formData.password}
                       onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                     />
                   </div>
-                </div>
-
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                    Confirmar contraseña
-                  </label>
-                  <div className="mt-1">
+                  <div>
                     <input
                       id="confirmPassword"
                       name="confirmPassword"
                       type="password"
                       required
+                      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      placeholder="Confirmar Contraseña"
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                     />
                   </div>
-                </div>
-
-                <div>
-                  <label htmlFor="documentId" className="block text-sm font-medium text-gray-700">
-                    Documento de identidad
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="documentId"
-                      name="documentId"
-                      type="text"
-                      required
-                      value={formData.documentId}
-                      onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="documentType" className="block text-sm font-medium text-gray-700">
-                    Tipo de documento
-                  </label>
-                  <div className="mt-1">
-                    <select
-                      id="documentType"
-                      name="documentType"
-                      value={formData.documentType}
-                      onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                    >
-                      <option value="CC">Cédula de Ciudadanía</option>
-                      <option value="CE">Cédula de Extranjería</option>
-                      <option value="TI">Tarjeta de Identidad</option>
-                      <option value="PP">Pasaporte</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                    Teléfono
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    id="terms"
-                    name="terms"
-                    type="checkbox"
-                    required
-                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  />
-                  <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
-                    Acepto los <a href="#" className="text-primary">términos y condiciones</a> y la <a href="#" className="text-primary">política de privacidad</a>
-                  </label>
                 </div>
 
                 <div>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors disabled:opacity-50"
+                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
-                    {loading ? 'Registrando...' : 'Registrarse'}
+                    Registrarse
                   </button>
                 </div>
               </form>

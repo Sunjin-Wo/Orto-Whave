@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { toast } from 'react-hot-toast';
+import api from '../services/api';
 
 const LoginPage = () => {
   const { login, loading } = useAuth();
@@ -22,10 +23,9 @@ const LoginPage = () => {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -35,8 +35,10 @@ const LoginPage = () => {
     setIsSubmitting(true);
     
     try {
-      await login(formData.email, formData.password, navigate);
-      toast.success('Inicio de sesión exitoso');
+      const response = await api.post('/auth/login', formData);
+      localStorage.setItem('token', response.data.token);
+      toast.success('¡Inicio de sesión exitoso!');
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       

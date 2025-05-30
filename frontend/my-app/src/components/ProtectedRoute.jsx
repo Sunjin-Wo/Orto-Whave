@@ -1,78 +1,30 @@
-import React, { useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth, withAuthNavigation } from '../context/AuthContext';
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-// Componente para rutas que requieren autenticación y un rol específico
-const ProtectedRouteBase = ({ element, requiredRole }) => {
-  const { isAuthenticated, user } = useAuth();
-  
-  useEffect(() => {
-    console.log("ProtectedRoute - isAuthenticated:", isAuthenticated);
-    console.log("ProtectedRoute - user:", user);
-    console.log("ProtectedRoute - requiredRole:", requiredRole);
-  }, [isAuthenticated, user, requiredRole]);
-  
-  if (!isAuthenticated) {
-    console.log("No autenticado, redirigiendo a login");
-    return <Navigate to="/login" />;
+const ProtectedRoute = ({ children, requiredRole }) => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
-  // Si el usuario es administrador, permitir acceso a todas las rutas
-  if (user?.role === 'ROLE_ADMIN') {
-    console.log("Usuario es admin, permitiendo acceso a todas las rutas");
-    return element;
+  if (!user) {
+    // Redirigir a login y guardar la ubicación actual
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
-  
-  // Si se especifica un rol requerido y el usuario no lo tiene, redirigir
-  if (requiredRole && user?.role !== requiredRole) {
-    console.log(`Rol requerido ${requiredRole} no coincide con ${user?.role}, redirigiendo`);
-    
-    // Redireccionar según el rol actual del usuario
-    switch (user?.role) {
-      case 'ROLE_DOCTOR':
-        return <Navigate to="/doctor-dashboard" />;
-      case 'ROLE_STAFF':
-        return <Navigate to="/dashboard" />;
-      case 'ROLE_USER':
-      default:
-        return <Navigate to="/profile" />;
-    }
+
+  if (requiredRole && user.role !== requiredRole) {
+    // Si se requiere un rol específico y el usuario no lo tiene
+    return <Navigate to="/" replace />;
   }
-  
-  console.log("Acceso permitido a ruta protegida");
-  return element;
+
+  return children;
 };
 
-// Componente para rutas que solo pueden acceder usuarios no autenticados
-const PublicRouteBase = ({ element }) => {
-  const { isAuthenticated, user } = useAuth();
-  
-  useEffect(() => {
-    console.log("PublicRoute - isAuthenticated:", isAuthenticated);
-    console.log("PublicRoute - user:", user);
-  }, [isAuthenticated, user]);
-  
-  if (isAuthenticated) {
-    console.log("Usuario autenticado, redirigiendo según rol");
-    
-    // Redireccionar según el rol del usuario
-    switch (user?.role) {
-      case 'ROLE_ADMIN':
-        return <Navigate to="/dashboard" />;
-      case 'ROLE_DOCTOR':
-        return <Navigate to="/doctor-dashboard" />;
-      case 'ROLE_STAFF':
-        return <Navigate to="/dashboard" />;
-      case 'ROLE_USER':
-      default:
-        return <Navigate to="/profile" />;
-    }
-  }
-  
-  console.log("Acceso permitido a ruta pública");
-  return element;
-};
-
-// Exportamos los componentes con el HOC aplicado
-export const ProtectedRoute = withAuthNavigation(ProtectedRouteBase);
-export const PublicRoute = withAuthNavigation(PublicRouteBase); 
+export default ProtectedRoute; 
