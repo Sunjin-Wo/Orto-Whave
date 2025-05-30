@@ -136,14 +136,30 @@ const NavbarBase = () => {
           <Link
             to="/login"
             className="px-5 py-1.5 text-sm uppercase tracking-wider font-medium transition-all duration-300 text-primary border-b-2 border-primary hover:bg-primary/10"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false);
+              setTimeout(() => {
+                window.scrollTo({
+                  top: 0,
+                  behavior: 'instant'
+                });
+              }, 100);
+            }}
           >
             Iniciar sesión
           </Link>
           <Link
             to="/register"
             className="px-5 py-1.5 text-sm uppercase tracking-wider font-medium transition-all duration-300 text-white bg-primary hover:bg-primary-dark"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false);
+              setTimeout(() => {
+                window.scrollTo({
+                  top: 0,
+                  behavior: 'instant'
+                });
+              }, 100);
+            }}
           >
             Crear cuenta
           </Link>
@@ -393,14 +409,30 @@ const NavbarBase = () => {
                     <Link
                       to="/login"
                       className="text-primary border-b-2 border-primary hover:bg-primary/10 uppercase tracking-wider block w-full text-center px-3 py-2 text-sm font-medium transition-colors"
-                      onClick={() => setIsOpen(false)}
+                      onClick={() => {
+                        setIsOpen(false);
+                        setTimeout(() => {
+                          window.scrollTo({
+                            top: 0,
+                            behavior: 'instant'
+                          });
+                        }, 100);
+                      }}
                     >
                       Iniciar sesión
                     </Link>
                     <Link
                       to="/register"
                       className="bg-primary text-white hover:bg-primary-dark uppercase tracking-wider block w-full text-center px-3 py-2 text-sm font-medium transition-colors"
-                      onClick={() => setIsOpen(false)}
+                      onClick={() => {
+                        setIsOpen(false);
+                        setTimeout(() => {
+                          window.scrollTo({
+                            top: 0,
+                            behavior: 'instant'
+                          });
+                        }, 100);
+                      }}
                     >
                       Crear cuenta
                     </Link>

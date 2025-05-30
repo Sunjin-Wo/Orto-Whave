@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmación de cita - OrthoWave</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <img src="https://orthowave.co/images/logo.png" alt="OrthoWave Logo" style="max-width: 200px;">
+        </div>
+        
+        <h1 style="color: #2c3e50; text-align: center;">Confirmación de cita</h1>
+        
+        <p>Hola <span th:text="${nombre}">Usuario</span>,</p>
+        
+        <p>Tu cita ha sido confirmada con los siguientes detalles:</p>
+        
+        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
+            <p><strong>Fecha y hora:</strong> <span th:text="${fecha}">fecha</span></p>
+            <p><strong>Especialista:</strong> <span th:text="${especialista}">especialista</span></p>
+        </div>
+        
+        <p>Recuerda:</p>
+        <ul style="color: #666;">
+            <li>Llegar 15 minutos antes de tu cita</li>
+            <li>Traer tu documento de identidad</li>
+            <li>Si no puedes asistir, cancelar con al menos 24 horas de anticipación</li>
+        </ul>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="https://orthowave.co/mi-cuenta/citas" 
+               style="background-color: #2ecc71; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                Ver mis citas
+            </a>
+        </div>
+        
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        
+        <p style="color: #666; font-size: 12px; text-align: center;">
+            Para cancelar o reprogramar tu cita, por favor contáctanos al +57 300 123 4567
+        </p>
+    </div>
+</body>
+</html> 

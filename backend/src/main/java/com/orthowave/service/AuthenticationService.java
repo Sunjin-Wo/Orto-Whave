@@ -4,11 +4,13 @@ import com.orthowave.config.JwtService;
 import com.orthowave.dto.AuthenticationRequest;
 import com.orthowave.dto.AuthenticationResponse;
 import com.orthowave.dto.RegisterRequest;
+import com.orthowave.model.Rol;
 import com.orthowave.model.Usuario;
 import com.orthowave.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,23 @@ public class AuthenticationService {
 
     @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
+        // Forzar el rol a PACIENTE para el registro público
+        request.setRol(Rol.PACIENTE);
+        return crearUsuario(request);
+    }
+
+    @Transactional
+    public AuthenticationResponse crearUsuarioPorAdmin(RegisterRequest request) {
+        // Verificar que el usuario actual sea admin
+        var usuarioActual = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (usuarioActual.getRol() != Rol.ADMIN) {
+            throw new RuntimeException("Solo los administradores pueden crear usuarios");
+        }
+
+        return crearUsuario(request);
+    }
+
+    private AuthenticationResponse crearUsuario(RegisterRequest request) {
         if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya está registrado");
         }
@@ -45,7 +64,8 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .email(usuario.getEmail())
                 .nombre(usuario.getNombre())
-                .rol(usuario.getRol().name())
+                .apellido(usuario.getApellido())
+                .rol(usuario.getRol())
                 .build();
     }
 
@@ -66,7 +86,8 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .email(usuario.getEmail())
                 .nombre(usuario.getNombre())
-                .rol(usuario.getRol().name())
+                .apellido(usuario.getApellido())
+                .rol(usuario.getRol())
                 .build();
     }
 } 

@@ -1,5 +1,6 @@
 package com.orthowave.dto;
 
+import com.orthowave.model.Rol;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationResponse {
     private String token;
-    private String email;
     private String nombre;
-    private String rol;
+    private String apellido;
+    private String email;
+    private Rol rol;
 } 

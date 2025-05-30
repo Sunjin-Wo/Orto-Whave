@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PencilIcon, TrashIcon, UserPlusIcon, MagnifyingGlassIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import CreateUserForm from './CreateUserForm';
+import { useAuth } from '../context/AuthContext';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -9,6 +11,8 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -188,17 +192,33 @@ const UserManagement = () => {
     }
   };
 
+  const handleUserCreated = (newUser) => {
+    setUsers([...users, newUser]);
+    fetchData(); // Recargar la lista de usuarios
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Gestión de Usuarios</h1>
-        <button 
-          onClick={fetchData}
-          className="flex items-center text-primary hover:text-primary-dark"
-        >
-          <ArrowPathIcon className="h-5 w-5 mr-1" />
-          Actualizar
-        </button>
+        <div className="flex space-x-2">
+          <button 
+            onClick={fetchData}
+            className="flex items-center text-primary hover:text-primary-dark"
+          >
+            <ArrowPathIcon className="h-5 w-5 mr-1" />
+            Actualizar
+          </button>
+          {user?.rol === 'ADMIN' && (
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark"
+            >
+              <UserPlusIcon className="h-5 w-5 mr-2" />
+              Crear Usuario
+            </button>
+          )}
+        </div>
       </div>
       
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
@@ -428,6 +448,14 @@ const UserManagement = () => {
             </form>
           </motion.div>
         </div>
+      )}
+
+      {/* Modal de creación de usuario */}
+      {isCreateModalOpen && (
+        <CreateUserForm
+          onClose={() => setIsCreateModalOpen(false)}
+          onUserCreated={handleUserCreated}
+        />
       )}
     </div>
   );
