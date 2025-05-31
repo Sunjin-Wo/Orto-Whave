@@ -211,8 +211,8 @@ const RegisterPage = () => {
                 }, 100);
               }}
             >
-              Inicia sesión
-            </Link>
+                  Inicia sesión
+                </Link>
           </p>
         </div>
 
@@ -280,15 +280,15 @@ const RegisterPage = () => {
                       Nombre
                     </label>
                     <div className="mt-1">
-                      <input
-                        id="firstName"
-                        name="firstName"
-                        type="text"
-                        required
-                        value={formData.firstName}
-                        onChange={handleChange}
+                    <input
+                      id="firstName"
+                      name="firstName"
+                      type="text"
+                      required
+                      value={formData.firstName}
+                      onChange={handleChange}
                         className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                      />
+                    />
                     </div>
                   </div>
 
@@ -297,20 +297,20 @@ const RegisterPage = () => {
                       Apellido
                     </label>
                     <div className="mt-1">
-                      <input
-                        id="lastName"
-                        name="lastName"
-                        type="text"
-                        required
-                        value={formData.lastName}
-                        onChange={handleChange}
+                    <input
+                      id="lastName"
+                      name="lastName"
+                      type="text"
+                      required
+                      value={formData.lastName}
+                      onChange={handleChange}
                         className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                      />
+                    />
                     </div>
                   </div>
                 </div>
 
-                <div>
+                  <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                     Correo electrónico
                   </label>
@@ -328,7 +328,7 @@ const RegisterPage = () => {
                   </div>
                 </div>
 
-                <div>
+                  <div>
                   <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
                     Teléfono
                   </label>
@@ -345,7 +345,7 @@ const RegisterPage = () => {
                   </div>
                 </div>
 
-                <div>
+                  <div>
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                     Contraseña
                   </label>
@@ -362,7 +362,7 @@ const RegisterPage = () => {
                   </div>
                 </div>
 
-                <div>
+                  <div>
                   <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                     Confirmar contraseña
                   </label>

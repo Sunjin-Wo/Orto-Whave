@@ -202,13 +202,13 @@ const UserManagement = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Gestión de Usuarios</h1>
         <div className="flex space-x-2">
-          <button 
-            onClick={fetchData}
-            className="flex items-center text-primary hover:text-primary-dark"
-          >
-            <ArrowPathIcon className="h-5 w-5 mr-1" />
-            Actualizar
-          </button>
+        <button 
+          onClick={fetchData}
+          className="flex items-center text-primary hover:text-primary-dark"
+        >
+          <ArrowPathIcon className="h-5 w-5 mr-1" />
+          Actualizar
+        </button>
           {user?.rol === 'ADMIN' && (
             <button
               onClick={() => setIsCreateModalOpen(true)}

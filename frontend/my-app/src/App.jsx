@@ -12,25 +12,25 @@ function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <Router>
-          <div className="flex flex-col min-h-screen">
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 3000,
-                style: {
-                  background: '#333',
-                  color: '#fff',
-                },
-              }}
-            />
-            <Navbar />
-            <main className="flex-grow">
-              <AppRoutes />
-            </main>
-            <Footer />
-          </div>
-        </Router>
+      <Router>
+        <div className="flex flex-col min-h-screen">
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: '#333',
+                color: '#fff',
+              },
+            }}
+          />
+          <Navbar />
+          <main className="flex-grow">
+            <AppRoutes />
+          </main>
+          <Footer />
+        </div>
+      </Router>
       </CartProvider>
     </AuthProvider>
   );

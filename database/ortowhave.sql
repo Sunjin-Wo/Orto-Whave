@@ -21,6 +21,51 @@ SET time_zone = "+00:00";
 -- Database: `ortowhave`
 --
 
+-- Crear la base de datos si no existe
+CREATE DATABASE IF NOT EXISTS ortowhave CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE ortowhave;
+
+-- Tabla de usuarios
+CREATE TABLE IF NOT EXISTS usuarios (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    telefono VARCHAR(20) NOT NULL UNIQUE,
+    rol VARCHAR(20) NOT NULL,
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    fecha_registro DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla de registros pendientes
+CREATE TABLE IF NOT EXISTS registros_pendientes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    telefono VARCHAR(20) NOT NULL UNIQUE,
+    codigo_verificacion VARCHAR(6) NOT NULL,
+    fecha_expiracion DATETIME NOT NULL,
+    verificado BOOLEAN NOT NULL DEFAULT FALSE,
+    fecha_creacion DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Insertar usuario administrador por defecto
+INSERT INTO usuarios (nombre, apellido, email, password, telefono, rol, activo, fecha_registro)
+VALUES (
+    'Admin',
+    'Sistema',
+    'admin@ortowhave.com',
+    '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', -- contraseña: Admin123*
+    '3000000000',
+    'ROLE_ADMIN',
+    true,
+    NOW()
+) ON DUPLICATE KEY UPDATE email=email;
+
 -- --------------------------------------------------------
 
 --

@@ -156,8 +156,8 @@ const LoginPage = () => {
                 }, 100);
               }}
             >
-              Regístrate
-            </Link>
+                  Regístrate
+                </Link>
           </p>
         </div>
 
