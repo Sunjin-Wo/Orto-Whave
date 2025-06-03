@@ -43,14 +43,8 @@ const LoginPage = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await api.post('/auth/login', formData);
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        toast.success('¡Inicio de sesión exitoso!');
-        navigate('/dashboard');
-      } else {
-        throw new Error('No se recibió el token de autenticación');
-      }
+      await login(formData.email, formData.password);
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       
@@ -59,7 +53,6 @@ const LoginPage = () => {
         toast.error('Por favor verifica tu correo electrónico antes de iniciar sesión');
       } else {
         setError('Credenciales inválidas. Por favor, verifica tu correo y contraseña.');
-        toast.error('Error al iniciar sesión');
       }
     } finally {
       setIsSubmitting(false);
