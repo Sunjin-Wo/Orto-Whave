@@ -44,9 +44,13 @@ const LoginPage = () => {
     
     try {
       const response = await api.post('/auth/login', formData);
-      localStorage.setItem('token', response.data.token);
-      toast.success('¡Inicio de sesión exitoso!');
-      navigate('/dashboard');
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        toast.success('¡Inicio de sesión exitoso!');
+        navigate('/dashboard');
+      } else {
+        throw new Error('No se recibió el token de autenticación');
+      }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       
@@ -67,15 +71,9 @@ const LoginPage = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch('http://localhost:8080/api/auth/verify-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          code: verificationCode
-        })
+      const response = await api.post('/auth/verify-email', {
+        email: formData.email,
+        code: verificationCode
       });
       
       if (response.ok) {
