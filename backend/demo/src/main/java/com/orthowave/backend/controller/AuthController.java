@@ -2,6 +2,7 @@ package com.orthowave.backend.controller;
 
 import com.orthowave.backend.model.User;
 import com.orthowave.backend.service.AuthService;
+import com.orthowave.backend.exception.AuthenticationException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +26,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> credentials) {
-        String emailOrPhone = credentials.get("emailOrPhone");
+        String email = credentials.get("email");
         String password = credentials.get("password");
-        if (emailOrPhone == null || password == null) {
+        if (email == null || password == null) {
             throw new AuthenticationException("Credenciales incompletas");
         }
-        Map<String, String> response = authService.login(emailOrPhone, password);
+        Map<String, String> response = authService.login(email, password);
         return ResponseEntity.ok(response);
     }
 
