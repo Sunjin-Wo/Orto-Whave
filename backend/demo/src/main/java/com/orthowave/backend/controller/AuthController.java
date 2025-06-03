@@ -25,9 +25,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> credentials) {
-        String email = credentials.get("email");
+        String emailOrPhone = credentials.get("emailOrPhone");
         String password = credentials.get("password");
-        Map<String, String> response = authService.login(email, password);
+        if (emailOrPhone == null || password == null) {
+            throw new AuthenticationException("Credenciales incompletas");
+        }
+        Map<String, String> response = authService.login(emailOrPhone, password);
         return ResponseEntity.ok(response);
     }
 

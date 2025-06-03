@@ -27,8 +27,8 @@ spring:
   mail:
     host: smtp-mail.outlook.com
     port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    username: noresetowc@hotmail.com
+    password: xdothdfawkulljjz
     properties:
       mail:
         smtp:
