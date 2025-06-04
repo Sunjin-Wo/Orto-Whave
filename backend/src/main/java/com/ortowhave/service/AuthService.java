@@ -11,21 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ortowhave.dto.request.LoginRequest;
 import com.ortowhave.dto.request.RegisterRequest;
-import com.ortowhave.dto.request.VerificationRequest;
+import com.ortowhave.dto.request.VerifyPatientRequest;
 import com.ortowhave.dto.response.JwtResponse;
 import com.ortowhave.exception.EmailAlreadyExistsException;
-import com.ortowhave.exception.InvalidVerificationCodeException;
 import com.ortowhave.exception.PhoneNumberAlreadyExistsException;
-import com.ortowhave.exception.ResourceNotFoundException;
-import com.ortowhave.exception.VerificationCodeExpiredException;
-import com.ortowhave.model.PendingRegistration;
 import com.ortowhave.model.User;
-import com.ortowhave.repository.PendingRegistrationRepository;
+import com.ortowhave.model.PendingRegistration;
 import com.ortowhave.repository.UserRepository;
+import com.ortowhave.repository.PendingRegistrationRepository;
 import com.ortowhave.security.jwt.JwtUtils;
 import com.ortowhave.security.service.UserDetailsImpl;
-import com.ortowhave.util.VerificationCodeGenerator;
-
+import com.ortowhave.service.EmailService;
+import java.util.Random;
 import java.time.LocalDateTime;
 
 @Service
@@ -34,109 +31,50 @@ public class AuthService {
     private UserRepository userRepository;
     
     @Autowired
-    private PendingRegistrationRepository pendingRegistrationRepository;
-    
-    @Autowired
     private PasswordEncoder passwordEncoder;
     
     @Autowired
     private JwtUtils jwtUtils;
     
     @Autowired
-    private EmailService emailService;
-    
-    @Autowired
-    private VerificationCodeGenerator codeGenerator;
-    
-    @Autowired
     private AuthenticationManager authenticationManager;
     
+    @Autowired
+    private PendingRegistrationRepository pendingRegistrationRepository;
+    
+    @Autowired
+    private EmailService emailService;
+    
     @Transactional
-    public void register(RegisterRequest registerRequest) {
-        // Verificar si el email ya existe en usuarios
+    public JwtResponse register(RegisterRequest registerRequest) {
+        // Verificar si el email ya existe
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new EmailAlreadyExistsException("Email ya registrado");
         }
         
-        // Verificar si el teléfono ya existe en usuarios
+        // Verificar si el teléfono ya existe
         if (userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
             throw new PhoneNumberAlreadyExistsException("Número de teléfono ya registrado");
         }
         
-        // Verificar si el email ya existe en registros pendientes
-        if (pendingRegistrationRepository.existsByEmail(registerRequest.getEmail())) {
-            // Si existe, eliminar el registro pendiente anterior
-            PendingRegistration existingRegistration = pendingRegistrationRepository.findByEmail(registerRequest.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró registro pendiente para este email"));
-            pendingRegistrationRepository.delete(existingRegistration);
-        }
-        
-        // Verificar si el teléfono ya existe en registros pendientes
-        if (pendingRegistrationRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
-            // Si existe, eliminar el registro pendiente anterior
-            PendingRegistration existingRegistration = pendingRegistrationRepository.findByPhoneNumber(registerRequest.getPhoneNumber())
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró registro pendiente para este teléfono"));
-            pendingRegistrationRepository.delete(existingRegistration);
-        }
-        
-        // Generar código de verificación
-        String verificationCode = codeGenerator.generateCode();
-        
-        // Crear registro pendiente
-        PendingRegistration pendingRegistration = new PendingRegistration();
-        pendingRegistration.setFirstName(registerRequest.getFirstName());
-        pendingRegistration.setLastName(registerRequest.getLastName());
-        pendingRegistration.setEmail(registerRequest.getEmail());
-        pendingRegistration.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        pendingRegistration.setPhoneNumber(registerRequest.getPhoneNumber());
-        pendingRegistration.setVerificationCode(verificationCode);
-        
-        pendingRegistrationRepository.save(pendingRegistration);
-        
-        // Enviar correo de verificación
-        emailService.sendVerificationEmail(registerRequest.getEmail(), verificationCode);
-    }
-    
-    @Transactional
-    public JwtResponse verifyEmail(VerificationRequest verificationRequest) {
-        PendingRegistration pendingRegistration = pendingRegistrationRepository.findByEmail(verificationRequest.getEmail())
-            .orElseThrow(() -> new ResourceNotFoundException("No se encontró registro pendiente para este email"));
-        
-        // Verificar si el código es correcto
-        if (!pendingRegistration.getVerificationCode().equals(verificationRequest.getCode())) {
-            throw new InvalidVerificationCodeException("Código de verificación inválido");
-        }
-        
-        // Verificar si el código ha expirado
-        if (LocalDateTime.now().isAfter(pendingRegistration.getExpirationDate())) {
-            throw new VerificationCodeExpiredException("El código de verificación ha expirado");
-        }
-        
-        // Crear usuario verificado
+        // Crear usuario
         User user = new User();
-        user.setFirstName(pendingRegistration.getFirstName());
-        user.setLastName(pendingRegistration.getLastName());
-        user.setEmail(pendingRegistration.getEmail());
-        user.setPassword(pendingRegistration.getPassword());
-        user.setPhoneNumber(pendingRegistration.getPhoneNumber());
+        user.setFirstName(registerRequest.getFirstName());
+        user.setLastName(registerRequest.getLastName());
+        user.setEmail(registerRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setPhoneNumber(registerRequest.getPhoneNumber());
         user.setRole("ROLE_USER");
         user.setActive(true);
         
         userRepository.save(user);
         
-        // Marcar registro como verificado
-        pendingRegistration.setVerified(true);
-        pendingRegistrationRepository.save(pendingRegistration);
-        
-        // Autenticar usuario
+        // Autenticar usuario y generar token
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(verificationRequest.getEmail(), pendingRegistration.getPassword())
+            new UsernamePasswordAuthenticationToken(registerRequest.getEmail(), registerRequest.getPassword())
         );
         
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        
-        // Generar token JWT
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String jwt = jwtUtils.generateJwtToken(authentication);
         
         return new JwtResponse(
@@ -170,21 +108,74 @@ public class AuthService {
         );
     }
     
+    public boolean validateToken(String token) {
+        return jwtUtils.validateJwtToken(token);
+    }
+
+    /**
+     * Inicia el registro de un paciente: guarda en PendingRegistration y envía código.
+     */
     @Transactional
-    public void resendVerificationCode(String email) {
-        PendingRegistration pendingRegistration = pendingRegistrationRepository.findByEmail(email)
-            .orElseThrow(() -> new ResourceNotFoundException("No se encontró registro pendiente para este email"));
-        
-        // Generar nuevo código
-        String newCode = codeGenerator.generateCode();
-        
-        // Actualizar código y fecha de expiración
-        pendingRegistration.setVerificationCode(newCode);
-        pendingRegistration.setExpirationDate(LocalDateTime.now().plusHours(24));
-        
-        pendingRegistrationRepository.save(pendingRegistration);
-        
-        // Enviar nuevo código por correo
-        emailService.sendVerificationEmail(email, newCode);
+    public void initiatePatientRegistration(RegisterRequest registerRequest) {
+        if (userRepository.existsByEmail(registerRequest.getEmail()) || pendingRegistrationRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new EmailAlreadyExistsException("Email ya registrado o pendiente de verificación");
+        }
+        if (userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber()) || pendingRegistrationRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
+            throw new PhoneNumberAlreadyExistsException("Número de teléfono ya registrado o pendiente de verificación");
+        }
+        // Generar código de verificación
+        String verificationCode = String.format("%06d", new Random().nextInt(999999));
+        PendingRegistration pending = new PendingRegistration();
+        pending.setFirstName(registerRequest.getFirstName());
+        pending.setLastName(registerRequest.getLastName());
+        pending.setEmail(registerRequest.getEmail());
+        pending.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        pending.setPhoneNumber(registerRequest.getPhoneNumber());
+        pending.setVerificationCode(verificationCode);
+        pending.setVerified(false);
+        pending.setCreationDate(LocalDateTime.now());
+        pending.setExpirationDate(LocalDateTime.now().plusHours(24));
+        pendingRegistrationRepository.save(pending);
+        emailService.sendVerificationEmail(registerRequest.getEmail(), verificationCode);
+    }
+
+    /**
+     * Verifica el código y crea el usuario definitivo.
+     */
+    @Transactional
+    public JwtResponse verifyPatientRegistration(VerifyPatientRequest verifyRequest) {
+        PendingRegistration pending = pendingRegistrationRepository.findByEmailAndVerificationCode(verifyRequest.getEmail(), verifyRequest.getVerificationCode())
+            .orElseThrow(() -> new RuntimeException("Código de verificación inválido o email no encontrado"));
+        if (pending.getVerified()) {
+            throw new RuntimeException("Este registro ya fue verificado");
+        }
+        if (pending.getExpirationDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("El código de verificación ha expirado");
+        }
+        // Crear usuario
+        User user = new User();
+        user.setFirstName(pending.getFirstName());
+        user.setLastName(pending.getLastName());
+        user.setEmail(pending.getEmail());
+        user.setPassword(pending.getPassword());
+        user.setPhoneNumber(pending.getPhoneNumber());
+        user.setRole("ROLE_USER");
+        user.setActive(true);
+        userRepository.save(user);
+        pending.setVerified(true);
+        pendingRegistrationRepository.save(pending);
+        // Autenticar usuario y generar token
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(user.getEmail(), verifyRequest.getVerificationCode())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+        return new JwtResponse(
+            jwt,
+            user.getId(),
+            user.getFirstName() + " " + user.getLastName(),
+            user.getEmail(),
+            user.getRole()
+        );
     }
 }

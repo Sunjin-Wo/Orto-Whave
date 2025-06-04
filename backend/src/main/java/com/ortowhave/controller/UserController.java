@@ -37,4 +37,17 @@ public class UserController {
     public ResponseEntity<String> getAdminDashboard() {
         return ResponseEntity.ok("Dashboard de administrador");
     }
+    
+    @GetMapping("/dashboard-redirect")
+    public ResponseEntity<String> getDashboardRedirect(@RequestHeader("Authorization") String token) {
+        String role = userService.extractRoleFromToken(token);
+        String url;
+        switch (role) {
+            case "ROLE_ADMIN": url = "/admin/dashboard"; break;
+            case "ROLE_DOCTOR": url = "/doctor/dashboard"; break;
+            case "ROLE_USER": url = "/patient/dashboard"; break;
+            default: url = "/user/dashboard";
+        }
+        return ResponseEntity.ok(url);
+    }
 }

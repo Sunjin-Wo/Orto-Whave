@@ -10,6 +10,7 @@ import com.ortowhave.dto.response.UserResponse;
 import com.ortowhave.exception.ResourceNotFoundException;
 import com.ortowhave.model.User;
 import com.ortowhave.repository.UserRepository;
+import com.ortowhave.security.jwt.JwtUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +22,9 @@ public class UserService {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private JwtUtils jwtUtils;
     
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
@@ -87,6 +91,13 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
         
         userRepository.delete(user);
+    }
+    
+    public String extractRoleFromToken(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        return jwtUtils.getRoleFromToken(token);
     }
     
     private UserResponse mapToUserResponse(User user) {

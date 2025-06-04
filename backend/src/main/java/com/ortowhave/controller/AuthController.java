@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.ortowhave.dto.request.LoginRequest;
 import com.ortowhave.dto.request.RegisterRequest;
-import com.ortowhave.dto.request.ResendVerificationRequest;
-import com.ortowhave.dto.request.VerificationRequest;
+import com.ortowhave.dto.request.VerifyPatientRequest;
 import com.ortowhave.dto.response.JwtResponse;
 import com.ortowhave.dto.response.MessageResponse;
 import com.ortowhave.service.AuthService;
@@ -23,14 +22,8 @@ public class AuthController {
     
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
-        authService.register(registerRequest);
-        return ResponseEntity.ok(new MessageResponse("Usuario registrado exitosamente. Por favor verifica tu correo."));
-    }
-    
-    @PostMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@Valid @RequestBody VerificationRequest verificationRequest) {
-        JwtResponse jwtResponse = authService.verifyEmail(verificationRequest);
-        return ResponseEntity.ok(jwtResponse);
+        authService.initiatePatientRegistration(registerRequest);
+        return ResponseEntity.ok(new MessageResponse("Registro iniciado. Revisa tu correo para el código de verificación."));
     }
     
     @PostMapping("/login")
@@ -39,9 +32,18 @@ public class AuthController {
         return ResponseEntity.ok(jwtResponse);
     }
     
-    @PostMapping("/resend-verification")
-    public ResponseEntity<?> resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
-        authService.resendVerificationCode(request.getEmail());
-        return ResponseEntity.ok(new MessageResponse("Código de verificación reenviado exitosamente."));
+    @PostMapping("/validate")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        boolean isValid = authService.validateToken(token);
+        return ResponseEntity.ok(new MessageResponse(isValid ? "Token válido" : "Token inválido"));
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verify(@Valid @RequestBody VerifyPatientRequest verifyRequest) {
+        JwtResponse jwtResponse = authService.verifyPatientRegistration(verifyRequest);
+        return ResponseEntity.ok(jwtResponse);
     }
 }
