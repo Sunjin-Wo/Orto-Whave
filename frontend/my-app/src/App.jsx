@@ -4,16 +4,13 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import AppRoutes from './routes/AppRoutes';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
 import './App.css';
 
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
-      <Router>
-        <div className="flex flex-col min-h-screen">
+        <Router>
           <Toaster
             position="top-right"
             toastOptions={{
@@ -24,13 +21,8 @@ function App() {
               },
             }}
           />
-          <Navbar />
-          <main className="flex-grow">
-            <AppRoutes />
-          </main>
-          <Footer />
-        </div>
-      </Router>
+          <AppRoutes />
+        </Router>
       </CartProvider>
     </AuthProvider>
   );

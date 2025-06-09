@@ -77,7 +77,7 @@ const UserManagement = () => {
       id: 1,
       firstName: 'Admin',
       lastName: 'OWC',
-      email: 'admin@orthowave.co',
+      email: 'admin@ortowhave.com',
       role: 'ROLE_ADMIN',
       active: true,
       createdAt: '2023-01-01'

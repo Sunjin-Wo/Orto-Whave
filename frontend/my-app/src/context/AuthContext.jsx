@@ -38,16 +38,24 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await api.post('/auth/login', { email, password });
-      const { token, user: userData } = response.data;
+      const { token, email: userEmail, role, redirectUrl, success, message } = response.data;
       
+      if (!success) {
+        toast.error(message);
+        throw new Error(message);
+      }
+
       localStorage.setItem('token', token);
-      setUser(userData);
+      setUser({ 
+        email: userEmail, 
+        role,
+        redirectUrl 
+      });
       
-      toast.success('¡Inicio de sesión exitoso!');
-      return true;
+      toast.success(message || '¡Inicio de sesión exitoso!');
     } catch (error) {
       console.error('Error en login:', error);
-      const message = error.response?.data?.message || 'Error al iniciar sesión';
+      const message = error.response?.data?.message || 'Error al iniciar sesión. Por favor verifica tus credenciales.';
       toast.error(message);
       throw error;
     }

@@ -1,70 +1,55 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { BuildingOffice2Icon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import DoctorsCarousel from './DoctorsCarousel';
+import { doctors } from '../data/doctors';
 
 const AboutUs = () => {
-  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const insurers = [
+    {
+      name: "EPS SURA",
+      logo: "/images/Logos/sura.webp",
+      description: "Aliado estratégico en servicios de salud",
+      url: "https://www.epssura.com/"
+    },
+    {
+      name: "Allianz",
+      logo: "/images/Logos/allianz.webp",
+      description: "Cobertura internacional en servicios médicos",
+      url: "https://www.allianz.co/"
+    },
+    {
+      name: "Positiva",
+      logo: "/images/Logos/positiva.webp",
+      description: "Especialistas en seguros de riesgos laborales",
+      url: "https://www.positiva.gov.co/"
+    },
+    {
+      name: "AXA Colpatria",
+      logo: "/images/Logos/logo-axa-colpatria.webp",
+      description: "Soluciones integrales en salud",
+      url: "https://www.axacolpatria.co/"
+    },
+    {
+      name: "Seguros Bolivar",
+      logo: "/images/Logos/seguros bolivar.webp",
+      description: "Respaldo y confianza en servicios médicos",
+      url: "https://www.segurosbolivar.com/"
+    }
+  ];
 
-  const doctors = [
+  const hospitals = [
     {
-      id: 1,
-      name: "[Nombre del Doctor]",
-      specialty: "[Especialidad]",
-      image: "/images/doctors/doctor-placeholder.jpg",
-      education: [
-        "• [Título Universitario]",
-        "• [Especialización]",
-        "• [Subespecialización]"
-      ],
-      experience: [
-        "• [Experiencia 1]",
-        "• [Experiencia 2]",
-        "• [Experiencia 3]"
-      ],
-      memberships: [
-        "• [Membresía 1]",
-        "• [Membresía 2]"
-      ]
+      name: "Los Cobos Medical Center",
+      logo: "/images/Logos/cobos.webp",
+      description: "Centro médico de alta complejidad",
+      backgroundImage: "/images/Logos/cobos.webp"
     },
     {
-      id: 2,
-      name: "[Nombre del Doctor]",
-      specialty: "[Especialidad]",
-      image: "/images/doctors/doctor-placeholder.jpg",
-      education: [
-        "• [Título Universitario]",
-        "• [Especialización]",
-        "• [Subespecialización]"
-      ],
-      experience: [
-        "• [Experiencia 1]",
-        "• [Experiencia 2]",
-        "• [Experiencia 3]"
-      ],
-      memberships: [
-        "• [Membresía 1]",
-        "• [Membresía 2]"
-      ]
-    },
-    {
-      id: 3,
-      name: "[Nombre del Doctor]",
-      specialty: "[Especialidad]",
-      image: "/images/doctors/doctor-placeholder.jpg",
-      education: [
-        "• [Título Universitario]",
-        "• [Especialización]",
-        "• [Subespecialización]"
-      ],
-      experience: [
-        "• [Experiencia 1]",
-        "• [Experiencia 2]",
-        "• [Experiencia 3]"
-      ],
-      memberships: [
-        "• [Membresía 1]",
-        "• [Membresía 2]"
-      ]
+      name: "Clínica Azul",
+      logo: "/images/Logos/clinicaazul.webp",
+      description: "Excelencia en atención hospitalaria",
+      backgroundImage: "/images/Logos/clinicaazul.webp"
     }
   ];
 
@@ -120,35 +105,23 @@ const AboutUs = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
+            className="grid grid-cols-2 gap-6"
           >
-            <div className="bg-gray-50 p-8 rounded-xl shadow-lg">
-              <h3 className="text-2xl font-bold text-primary mb-6">Valores Corporativos</h3>
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Compromiso</h4>
-                  <p className="text-gray-600 text-sm">
-                    Soluciones médicas efectivas y atención de máxima calidad.
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Seguridad</h4>
-                  <p className="text-gray-600 text-sm">
-                    Rigurosas medidas en todos los ámbitos de nuestra actividad.
-            </p>
-        </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Compasión</h4>
-                  <p className="text-gray-600 text-sm">
-                    Atención médica cercana y relación basada en la confianza.
-                  </p>
-              </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Innovación</h4>
-                  <p className="text-gray-600 text-sm">
-                    Tecnología y conocimientos médicos de vanguardia.
-                  </p>
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <h4 className="text-xl font-bold text-primary mb-2">Experiencia</h4>
+              <p className="text-gray-600">Más de 10 años brindando atención especializada</p>
             </div>
-              </div>
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <h4 className="text-xl font-bold text-primary mb-2">Pacientes</h4>
+              <p className="text-gray-600">Miles de pacientes satisfechos con nuestros servicios</p>
+            </div>
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <h4 className="text-xl font-bold text-primary mb-2">Especialistas</h4>
+              <p className="text-gray-600">Equipo médico altamente calificado y especializado</p>
+            </div>
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <h4 className="text-xl font-bold text-primary mb-2">Tecnología</h4>
+              <p className="text-gray-600">Equipamiento de última generación para diagnóstico y tratamiento</p>
             </div>
           </motion.div>
         </div>
@@ -159,108 +132,96 @@ const AboutUs = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center"
+          className="mb-16"
         >
-          <h3 className="text-3xl font-bold text-gray-900 mb-8">
+          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
             Nuestro Equipo Médico
-            </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {doctors.map((doctor) => (
-              <motion.div
-                key={doctor.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+          </h3>
+          <DoctorsCarousel doctors={doctors} />
+        </motion.div>
+
+        {/* Sección de aseguradoras */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-24"
+        >
+          <h3 className="text-3xl font-bold text-gray-900 mb-12 text-center">
+            Aseguradoras Aliadas
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+            {insurers.map((insurer, index) => (
+              <motion.a
+                key={index}
+                href={insurer.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300"
-                onClick={() => setSelectedDoctor(doctor)}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <div className="aspect-w-3 aspect-h-4">
-                  <img
-                    src={doctor.image}
-                    alt={doctor.name}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+                  <div className="aspect-w-16 aspect-h-9 mb-4">
+                    <img
+                      src={insurer.logo}
+                      alt={insurer.name}
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 font-medium mt-2">{insurer.description}</p>
+                  </div>
                 </div>
-                <div className="p-6">
-                  <h4 className="text-xl font-bold text-gray-900 mb-2">{doctor.name}</h4>
-                  <p className="text-primary font-medium">{doctor.specialty}</p>
-                </div>
-              </motion.div>
+              </motion.a>
             ))}
           </div>
         </motion.div>
 
-        {/* Modal del doctor */}
-        <AnimatePresence>
-          {selectedDoctor && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-              onClick={() => setSelectedDoctor(null)}
-            >
+        {/* Sección de hospitales */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-16"
+        >
+          <h3 className="text-3xl font-bold text-gray-900 mb-12 text-center">
+            Centros Médicos Asociados
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {hospitals.map((hospital, index) => (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
+                key={index}
+                className="relative overflow-hidden rounded-2xl shadow-xl group"
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.2 }}
               >
-                <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
-                  <h3 className="text-2xl font-bold text-gray-900">{selectedDoctor.name}</h3>
-                  <button
-                    onClick={() => setSelectedDoctor(null)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <XMarkIcon className="h-6 w-6" />
-                  </button>
-                </div>
-                <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                      <img
-                        src={selectedDoctor.image}
-                        alt={selectedDoctor.name}
-                        className="w-full h-auto rounded-lg shadow-lg"
-                      />
-                      <div className="mt-4">
-                        <h4 className="text-xl font-bold text-primary mb-2">{selectedDoctor.specialty}</h4>
-                      </div>
-                    </div>
-                    <div className="space-y-6">
-                      <div>
-                        <h4 className="text-lg font-bold text-gray-900 mb-2">Educación</h4>
-                        <ul className="space-y-2 text-gray-600">
-                          {selectedDoctor.education.map((item, index) => (
-                            <li key={index}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="text-lg font-bold text-gray-900 mb-2">Experiencia</h4>
-                        <ul className="space-y-2 text-gray-600">
-                          {selectedDoctor.experience.map((item, index) => (
-                            <li key={index}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="text-lg font-bold text-gray-900 mb-2">Membresías</h4>
-                        <ul className="space-y-2 text-gray-600">
-                          {selectedDoctor.memberships.map((item, index) => (
-                            <li key={index}>{item}</li>
-                          ))}
-                        </ul>
+                <div className="relative h-80">
+                  <div
+                    className="absolute inset-0 bg-cover bg-center transform group-hover:scale-110 transition-transform duration-700"
+                    style={{ backgroundImage: `url(${hospital.backgroundImage})` }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent group-hover:from-black/90 transition-all duration-300">
+                    <div className="absolute inset-0 flex flex-col justify-end p-8">
+                      <div className="transform group-hover:-translate-y-4 transition-transform duration-300">
+                        <h4 className="text-3xl font-bold text-white mb-3 text-center">{hospital.name}</h4>
+                        <p className="text-gray-200 text-center text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          {hospital.description}
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
               </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </div>
   );

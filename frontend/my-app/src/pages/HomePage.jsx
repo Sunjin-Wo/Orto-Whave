@@ -3,18 +3,18 @@ import Hero from '../components/Hero';
 import Services from '../components/Services';
 import Products from '../components/Products';
 import AboutUs from '../components/AboutUs';
-import Alliances from '../components/Alliances';
 import Contact from '../components/Contact';
+import Navbar from '../components/Navbar';
 
 const HomePage = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="min-h-screen">
+      <Navbar />
       <main>
         <Hero />
         <Services />
         <Products />
         <AboutUs />
-        <Alliances />
         <Contact />
       </main>
     </div>
