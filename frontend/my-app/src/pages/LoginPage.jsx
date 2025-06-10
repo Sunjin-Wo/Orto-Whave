@@ -48,6 +48,20 @@ const LoginPage = () => {
           <h2 className="text-center text-3xl font-bold text-gray-900">
             Bienvenido de nuevo
           </h2>
+          <div className="mt-2 text-center text-sm">
+            <p className="text-gray-600 mb-2">
+              Credenciales de prueba:
+            </p>
+            <p className="text-gray-600">
+              <strong>Administrador:</strong> admin@ortowhite.com / admin123
+            </p>
+            <p className="text-gray-600">
+              <strong>Doctor:</strong> doctor@ortowhite.com / doctor123
+            </p>
+            <p className="text-gray-600 mb-4">
+              <strong>Paciente:</strong> paciente@ortowhite.com / paciente123
+            </p>
+          </div>
           <p className="mt-2 text-center text-sm text-gray-600">
             ¿No tienes una cuenta?{' '}
             <Link to="/register" className="font-medium text-primary hover:text-primary-dark transition-colors">
